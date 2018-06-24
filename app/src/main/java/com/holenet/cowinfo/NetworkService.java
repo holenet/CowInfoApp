@@ -29,7 +29,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public class NetworkService {
-    public static API api;
+    private static API api;
     private static String authenticationToken;
 
     private static String authenticator(User user) {
@@ -71,10 +71,8 @@ public class NetworkService {
         return request(call, "signUp");
     }
 
-
-
     public interface API {
-        String BASE_URL = "http://http://13.125.31.214";
+        String BASE_URL = "http://13.125.31.214";
         String USERS_URL = BASE_URL + "/users/";
         String COWS_URL = BASE_URL + "/cows/";
         String RECORDS_URL = BASE_URL + "/records/";
@@ -91,7 +89,7 @@ public class NetworkService {
         private T result;
         private Map<String, String> errors;
 
-        public Result(Response<T> response) {
+        private Result(Response<T> response) {
             isSuccessful = response.isSuccessful();
             if (isSuccessful) {
                 result = response.body();
@@ -170,7 +168,7 @@ public class NetworkService {
         protected void responseInit(boolean isSuccessful) {
             Log.d("NetworkService Response", isSuccessful ? "Succeeded" : "Failed");
         }
-        protected abstract void responseSuccess(R result);
+        protected abstract void responseSuccess(R r);
         protected abstract void responseFail(Map<String, String> errors);
         protected boolean existErrors(Map<String, String> errors, Context context) {
             if (errors == null) {
@@ -179,7 +177,6 @@ public class NetworkService {
             }
             return true;
         }
-
     }
 
     private static void logResponse(String tag, Response response) {

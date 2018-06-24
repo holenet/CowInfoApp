@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -14,20 +15,24 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.holenet.cowinfo.item.User;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class SignInActivity extends AppCompatActivity {
     final static int RESULT_SUCCESS = 101;
-    final static int RESULT_FAIL = 102;
     final static int RESULT_EXIT = 103;
 
     final static int MODE_SIGN_IN = 201;
     final static int MODE_SIGN_UP = 202;
     private int mode = MODE_SIGN_IN;
 
-//    private SignInTask signInTask;
-//    private SignUpTask signUpTask;
+    private SignInTask signInTask;
+    private SignUpTask signUpTask;
 
     private EditText eTusername, eTpassword, eTpassword2;
     private CheckBox cBautoSignIn, cBsaveUsername, cBsavePassword;
@@ -41,7 +46,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        setResult(RESULT_CANCELED);
+        setResult(RESULT_EXIT);
 
         pref = getSharedPreferences("sign_in", 0);
 
@@ -117,9 +122,9 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void attemptSignIn() {
-//        if (signInTask != null) {
-//            return;
-//        }
+        if (signInTask != null) {
+            return;
+        }
 
         eTusername.setError(null);
         eTpassword.setError(null);
@@ -128,14 +133,14 @@ public class SignInActivity extends AppCompatActivity {
         String password = eTpassword.getText().toString();
 
         User user = new User(username, password);
-//        signInTask = new SignInTask(this);
-//        signInTask.execute(user);
+        signInTask = new SignInTask(this);
+        signInTask.execute(user);
     }
 
     private void attemptSignUp() {
-//        if (signUpTask != null) {
-//            return;
-//        }
+        if (signUpTask != null) {
+            return;
+        }
 
         eTusername.setError(null);
         eTpassword.setError(null);
@@ -152,8 +157,8 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         User user = new User(username, password);
-//        signUpTask = new SignUpTask(this);
-//        signUpTask.execute(user);
+        signUpTask = new SignUpTask(this);
+        signUpTask.execute(user);
     }
 
     private void onFinishSignInOrUp(User user) {
@@ -239,5 +244,95 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void setErrors(Map<String, String> errors) {
+        List<String> others = new ArrayList<>();
+        for (Map.Entry<String, String> entry: errors.entrySet()) {
+            String field = entry.getKey();
+            String error = entry.getValue();
+            switch (field) {
+                case "username":
+                    eTusername.setError(error);
+                    break;
+                case "password":
+                    eTpassword.setError(error);
+                    break;
+                case "detail":
+                    others.add(error);
+                    break;
+                default:
+                    others.add(field + ": "+ error);
+            }
+        }
+
+        for (EditText editText : new EditText[]{eTusername, eTpassword}) {
+            if (editText.getError() != null) {
+                editText.requestFocus();
+                break;
+            }
+        }
+
+        if (others.size() > 0) {
+            Toast.makeText(this, TextUtils.join("\n", others), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static class SignInTask extends NetworkService.Task<SignInActivity, User, User> {
+        public SignInTask(SignInActivity holder) {
+            super(holder);
+        }
+
+        @Override
+        protected NetworkService.Result<User> request(User user) {
+            return NetworkService.signIn(user);
+        }
+
+        @Override
+        protected void responseInit(boolean isSuccessful) {
+            super.responseInit(isSuccessful);
+            getHolder().signInTask = null;
+        }
+
+        @Override
+        protected void responseSuccess(User user) {
+            getHolder().onFinishSignInOrUp(user);
+        }
+
+        @Override
+        protected void responseFail(Map<String, String> errors) {
+            if (existErrors(errors, getHolder())) {
+                getHolder().setErrors(errors);
+            }
+        }
+    }
+
+    private static class SignUpTask extends NetworkService.Task<SignInActivity, User, User> {
+        public SignUpTask(SignInActivity holder) {
+            super(holder);
+        }
+
+        @Override
+        protected NetworkService.Result<User> request(User user) {
+            return NetworkService.signUp(user);
+        }
+
+        @Override
+        protected void responseInit(boolean isSuccessful) {
+            super.responseInit(isSuccessful);
+            getHolder().signUpTask = null;
+        }
+
+        @Override
+        protected void responseSuccess(User user) {
+            getHolder().onFinishSignInOrUp(user);
+        }
+
+        @Override
+        protected void responseFail(Map<String, String> errors) {
+            if (existErrors(errors, getHolder())) {
+                getHolder().setErrors(errors);
+            }
+        }
     }
 }
