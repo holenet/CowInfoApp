@@ -1,5 +1,6 @@
 package com.holenet.cowinfo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
         vPmain.setAdapter(adapter);
+
+        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+        startActivityForResult(intent, 0);
     }
 
     @Override
