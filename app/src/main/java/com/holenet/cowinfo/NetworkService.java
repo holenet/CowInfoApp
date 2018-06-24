@@ -7,6 +7,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.holenet.cowinfo.item.Cow;
 import com.holenet.cowinfo.item.User;
 
 import org.json.JSONArray;
@@ -17,6 +18,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -27,6 +29,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public class NetworkService {
     private static API api;
@@ -71,6 +74,12 @@ public class NetworkService {
         return request(call, "signUp");
     }
 
+    public static Result<List<Cow>> getCows(boolean deleted) {
+        init();
+        Call<List<Cow>> call = api.getCows(authenticationToken, deleted);
+        return request(call, "getCows");
+    }
+
     public interface API {
         String BASE_URL = "http://13.125.31.214";
         String USERS_URL = BASE_URL + "/users/";
@@ -82,6 +91,9 @@ public class NetworkService {
 
         @POST(USERS_URL + "new/")
         Call<User> signUp(@Body User user);
+
+        @GET(COWS_URL)
+        Call<List<Cow>> getCows(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
     }
 
     public static class Result<T> {
