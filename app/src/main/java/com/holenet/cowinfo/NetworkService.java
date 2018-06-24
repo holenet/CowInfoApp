@@ -74,10 +74,10 @@ public class NetworkService {
         return request(call, "signUp");
     }
 
-    public static Result<List<Cow>> getCows(boolean deleted) {
+    public static Result<List<Cow>> getCowList(boolean deleted) {
         init();
-        Call<List<Cow>> call = api.getCows(authenticationToken, deleted);
-        return request(call, "getCows");
+        Call<List<Cow>> call = api.getCowList(authenticationToken, deleted);
+        return request(call, "getCowList");
     }
 
     public interface API {
@@ -93,7 +93,7 @@ public class NetworkService {
         Call<User> signUp(@Body User user);
 
         @GET(COWS_URL)
-        Call<List<Cow>> getCows(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
+        Call<List<Cow>> getCowList(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
     }
 
     public static class Result<T> {

@@ -14,6 +14,7 @@ import com.holenet.cowinfo.item.Cow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CowListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -21,6 +22,8 @@ public class CowListFragment extends Fragment {
     private List<Cow> cows = new ArrayList<>();
 //    private OnListFragmentInteractionListener listener;
     CowRecyclerAdapter adapter;
+
+    private GetCowListTask getCowListTask;
 
     public static CowListFragment newInstance(int columnCount) {
         CowListFragment fragment = new CowListFragment();
@@ -47,12 +50,13 @@ public class CowListFragment extends Fragment {
         cows.add(cow2);
 
         adapter = new CowRecyclerAdapter(cows);
+
+        attemptGetCowList();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cow_list, container, false);
-
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -63,19 +67,23 @@ public class CowListFragment extends Fragment {
             }
             recyclerView.setAdapter(adapter);
         }
-        /* Just for testing */
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cow cow = new Cow();
-                cow.number = "aoiwejfoawiefj";
-                cows.add(cow);
-                adapter.notifyDataSetChanged();
-            }
-        }, 2000);
         return view;
     }
 
+    private void attemptGetCowList() {
+        if (getCowListTask != null) {
+            return;
+        }
+
+        getCowListTask = new GetCowListTask(this);
+        getCowListTask.execute(false);
+    }
+
+    private void setCowList(List<Cow> cows) {
+        this.cows.clear();
+        this.cows.addAll(cows);
+        adapter.notifyDataSetChanged();
+    }
 
 /*
     @Override
@@ -112,4 +120,25 @@ public class CowListFragment extends Fragment {
         void onListFragmentInteraction(DummyItem item);
     }
 */
+
+    private static class GetCowListTask extends NetworkService.Task<CowListFragment, Boolean, List<Cow>> {
+        public GetCowListTask(CowListFragment holder) {
+            super(holder);
+        }
+
+        @Override
+        protected NetworkService.Result<List<Cow>> request(Boolean deleted) {
+            return NetworkService.getCowList(deleted);
+        }
+
+        @Override
+        protected void responseSuccess(List<Cow> cows) {
+            getHolder().setCowList(cows);
+        }
+
+        @Override
+        protected void responseFail(Map<String, String> errors) {
+            existErrors(errors, getHolder().getContext());
+        }
+    }
 }
