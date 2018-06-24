@@ -168,8 +168,8 @@ public class SignInActivity extends AppCompatActivity {
         editor.putBoolean(getString(R.string.pref_key_auto_sign_in), cBautoSignIn.isChecked());
         editor.putBoolean(getString(R.string.pref_key_save_username), cBsaveUsername.isChecked());
         editor.putBoolean(getString(R.string.pref_key_save_password), cBsavePassword.isChecked());
-        editor.putString(getString(R.string.pref_key_username), user.username);
-        editor.putString(getString(R.string.pref_key_password), user.password);
+        editor.putString(getString(R.string.pref_key_username), eTusername.getText().toString());
+        editor.putString(getString(R.string.pref_key_password), eTpassword.getText().toString());
         editor.apply();
 
         Intent intent = new Intent();
