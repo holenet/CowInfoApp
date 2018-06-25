@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
+                intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
                 startActivityForResult(intent, REQUEST_NEW_COW);
             }
         });

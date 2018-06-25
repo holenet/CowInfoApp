@@ -80,6 +80,12 @@ public class NetworkService {
         return request(call, "getCowList");
     }
 
+    public static Result<Cow> createCow(Cow cow) {
+        init();
+        Call<Cow> call = api.createCow(authenticationToken, cow);
+        return request(call, "createCow");
+    }
+
     public interface API {
         String BASE_URL = "http://13.125.31.214";
         String USERS_URL = BASE_URL + "/users/";
@@ -94,6 +100,9 @@ public class NetworkService {
 
         @GET(COWS_URL)
         Call<List<Cow>> getCowList(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
+
+        @POST(COWS_URL)
+        Call<Cow> createCow(@Header("Authorization") String authorization, @Body Cow cow);
     }
 
     public static class Result<T> {
