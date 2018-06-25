@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SignInActivity extends AppCompatActivity {
-    final static int RESULT_SUCCESS = 101;
-    final static int RESULT_EXIT = 103;
-
     final static int MODE_SIGN_IN = 201;
     final static int MODE_SIGN_UP = 202;
     private int mode = MODE_SIGN_IN;
@@ -48,7 +45,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        setResult(RESULT_EXIT);
+        setResult(RESULT_CANCELED);
 
         pref = getSharedPreferences("sign_in", 0);
 
@@ -178,7 +175,7 @@ public class SignInActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.putExtra("user", user);
-        setResult(RESULT_SUCCESS, intent);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

@@ -115,14 +115,14 @@ public class EditCowActivity extends AppCompatActivity {
                     ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(eTnumber, 0);
                 }
             }, 100);
-
-            setResult(RESULT_CANCELED);
         } else if (edit_mode == MODE_MODIFY) {
             getSupportActionBar().setTitle("개체 정보 수정");
             // TODO: Load cow instance from intent and apply onto UI
         } else {
             finish();
         }
+
+        setResult(RESULT_CANCELED);
     }
 
     private void attemptSave() {
@@ -308,6 +308,9 @@ public class EditCowActivity extends AppCompatActivity {
 
         @Override
         protected void responseSuccess(Cow cow) {
+            Intent intent = new Intent();
+            intent.putExtra("cow", cow);
+            getHolder().setResult(RESULT_OK, intent);
             getHolder().finish();
         }
 

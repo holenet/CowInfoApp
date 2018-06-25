@@ -1,8 +1,9 @@
 package com.holenet.cowinfo.item;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Cow {
+public class Cow implements Serializable {
     public Integer id;
     public ArrayList<Record> records;
     public String created;

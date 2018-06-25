@@ -1,6 +1,8 @@
 package com.holenet.cowinfo.item;
 
-public class Record {
+import java.io.Serializable;
+
+public class Record implements Serializable {
     public Integer id;
     public String created;
     public String content;

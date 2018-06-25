@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,11 +14,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.holenet.cowinfo.item.Cow;
 import com.holenet.cowinfo.item.User;
 
 public class MainActivity extends AppCompatActivity {
     final static int REQUEST_SIGN_IN = 101;
-    final static int REQUEST_NEW_COW = 102;
+    final static int REQUEST_CREATE_COW = 102;
 
     private ViewPager vPmain;
 
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
                 intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
-                startActivityForResult(intent, REQUEST_NEW_COW);
+                startActivityForResult(intent, REQUEST_CREATE_COW);
             }
         });
 
@@ -59,11 +59,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SIGN_IN) {
-            if (resultCode == SignInActivity.RESULT_SUCCESS) {
+            if (resultCode == RESULT_OK) {
                 user = (User) data.getSerializableExtra("user");
                 // TODO: handle success result
-            } else if (resultCode == SignInActivity.RESULT_EXIT) {
+            } else if (resultCode == RESULT_CANCELED) {
                 finish();
+            }
+        } else if (requestCode == REQUEST_CREATE_COW) {
+            if (resultCode == RESULT_OK) {
+                Cow cow = (Cow) data.getSerializableExtra("cow");
+                // TODO: notify to the CowListFragment
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
