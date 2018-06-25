@@ -30,8 +30,17 @@ public class CowRecyclerAdapter extends RecyclerView.Adapter<CowRecyclerAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.cow = cows.get(position);
-        holder.tVid.setText(String.valueOf(cows.get(position).id));
-        holder.tVcontent.setText(cows.get(position).number);
+        char sexSymbol = (holder.cow.sex.equals("female") ? '♀' : '♂');
+        String summary = holder.cow.number.split("-")[2]+" "+sexSymbol;
+        holder.tVsummary.setText(summary);
+        holder.tVcount.setText("이력 "+String.valueOf(holder.cow.records.size()));
+        holder.tVnumber.setText(cows.get(position).number);
+        if (holder.cow.birthday != null) {
+            holder.tVbirthday.setVisibility(View.VISIBLE);
+            holder.tVbirthday.setText("출생 "+holder.cow.birthday);
+        } else {
+            holder.tVbirthday.setVisibility(View.GONE);
+        }
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,20 +62,21 @@ public class CowRecyclerAdapter extends RecyclerView.Adapter<CowRecyclerAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
-        public final TextView tVid;
-        public final TextView tVcontent;
-        public Cow cow;
+        final TextView tVsummary, tVcount, tVnumber, tVbirthday;
+        Cow cow;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             this.view = view;
-            tVid = view.findViewById(R.id.item_number);
-            tVcontent = view.findViewById(R.id.content);
+            tVsummary = view.findViewById(R.id.tVsummary);
+            tVcount = view.findViewById(R.id.tVcount);
+            tVnumber = view.findViewById(R.id.tVnumber);
+            tVbirthday = view.findViewById(R.id.tVbirthday);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + tVcontent.getText() + "'";
+            return super.toString() + " '" + tVnumber.getText() + "'";
         }
     }
 }
