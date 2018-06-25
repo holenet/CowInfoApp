@@ -41,16 +41,7 @@ public class CowListFragment extends Fragment {
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-        /* Dummy items */
-        Cow cow1 = new Cow();
-        cow1.number = "number1";
-        Cow cow2 = new Cow();
-        cow2.number = "number2";
-        cows.add(cow1);
-        cows.add(cow2);
-
         adapter = new CowRecyclerAdapter(cows);
-
         attemptGetCowList();
     }
 
