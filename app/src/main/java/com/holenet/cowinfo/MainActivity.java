@@ -77,7 +77,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.mIsignOut) {
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            intent.putExtra("signed_out", true);
+            startActivityForResult(intent, REQUEST_SIGN_IN);
             return true;
         }
         return super.onOptionsItemSelected(item);

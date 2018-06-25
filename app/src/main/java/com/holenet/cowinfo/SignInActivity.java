@@ -121,6 +121,10 @@ public class SignInActivity extends AppCompatActivity {
                 lLForSignUp.setLayoutParams(layoutParams);
             }
         });
+
+        if (pref.getBoolean(getString(R.string.pref_key_auto_sign_in), false) && !getIntent().getBooleanExtra("signed_out", false)) {
+            attemptSignIn();
+        }
     }
 
     private void attemptSignIn() {
