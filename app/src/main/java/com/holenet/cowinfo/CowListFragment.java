@@ -61,7 +61,7 @@ public class CowListFragment extends Fragment {
         return view;
     }
 
-    private void attemptGetCowList() {
+    public void attemptGetCowList() {
         if (getCowListTask != null) {
             return;
         }
@@ -120,6 +120,12 @@ public class CowListFragment extends Fragment {
         @Override
         protected NetworkService.Result<List<Cow>> request(Boolean deleted) {
             return NetworkService.getCowList(deleted);
+        }
+
+        @Override
+        protected void responseInit(boolean isSuccessful) {
+            super.responseInit(isSuccessful);
+            getHolder().getCowListTask = null;
         }
 
         @Override

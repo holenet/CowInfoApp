@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (requestCode == REQUEST_CREATE_COW) {
             if (resultCode == RESULT_OK) {
                 Cow cow = (Cow) data.getSerializableExtra("cow");
-                // TODO: notify to the CowListFragment
+                cowListFragment.attemptGetCowList();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

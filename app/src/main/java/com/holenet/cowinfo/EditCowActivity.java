@@ -78,7 +78,7 @@ public class EditCowActivity extends AppCompatActivity {
                         EditCowActivity.this.day = dayOfMonth;
                         tVbirthday.setText(String.format(Locale.KOREA, "%d년 %d월 %d일", year, month + 1, dayOfMonth));
                     }
-                }, year, month, day);
+                }, year, month - 1, day);
                 dialog.show();
             }
         });
