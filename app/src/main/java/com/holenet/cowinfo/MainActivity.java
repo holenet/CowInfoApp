@@ -19,6 +19,7 @@ import com.holenet.cowinfo.item.User;
 
 public class MainActivity extends AppCompatActivity {
     final static int REQUEST_SIGN_IN = 101;
+    final static int REQUEST_NEW_COW = 102;
 
     private ViewPager vPmain;
 
@@ -35,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fABnewCow = findViewById(R.id.fABnewCow);
+        fABnewCow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
+                startActivityForResult(intent, REQUEST_NEW_COW);
             }
         });
 
