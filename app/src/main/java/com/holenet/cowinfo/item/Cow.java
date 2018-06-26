@@ -19,4 +19,9 @@ public class Cow implements Serializable {
         this.mother_number = mother_number;
         this.birthday = birthday;
     }
+
+    @Override
+    public String toString() {
+        return this.number;
+    }
 }

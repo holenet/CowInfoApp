@@ -13,11 +13,11 @@ import java.util.List;
 
 public class CowRecyclerAdapter extends RecyclerView.Adapter<CowRecyclerAdapter.ViewHolder> {
     private final List<Cow> cows;
-//    private final OnListFragmentInteractionListener mListener;
+    private final OnCowSelectedListener listener;
 
-    public CowRecyclerAdapter(List<Cow> items) {
+    public CowRecyclerAdapter(List<Cow> items, OnCowSelectedListener listener) {
         cows = items;
-//        mListener = listener;
+        this.listener = listener;
     }
 
     @Override
@@ -45,12 +45,9 @@ public class CowRecyclerAdapter extends RecyclerView.Adapter<CowRecyclerAdapter.
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (null != mListener) {
-//                     Notify the active callbacks interface (the activity, if the
-//                     fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
-                Log.d("onClick", holder.toString());
+                if (listener != null) {
+                    listener.onCowSelected(holder.cow, holder.getAdapterPosition());
+                }
             }
         });
     }
@@ -78,5 +75,9 @@ public class CowRecyclerAdapter extends RecyclerView.Adapter<CowRecyclerAdapter.
         public String toString() {
             return super.toString() + " '" + tVnumber.getText() + "'";
         }
+    }
+
+    public interface OnCowSelectedListener {
+        void onCowSelected(Cow cow, int position);
     }
 }

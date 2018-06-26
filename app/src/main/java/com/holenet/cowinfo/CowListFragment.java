@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,12 @@ public class CowListFragment extends Fragment {
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-        adapter = new CowRecyclerAdapter(cows);
+        adapter = new CowRecyclerAdapter(cows, new CowRecyclerAdapter.OnCowSelectedListener() {
+            @Override
+            public void onCowSelected(Cow cow, int position) {
+                Log.e("onCowSelected", position+": "+cow.toString());
+            }
+        });
         attemptGetCowList();
     }
 
