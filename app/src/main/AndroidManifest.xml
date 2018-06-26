@@ -26,7 +26,11 @@
             android:label="로그인" />
         <activity
             android:name=".EditCowActivity"
-            android:label="개체 정보 수정"/>
+            android:label="개체 정보 수정" />
+        <activity
+            android:name=".CowDetailActivity"
+            android:label="@string/title_activity_cow_detail"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

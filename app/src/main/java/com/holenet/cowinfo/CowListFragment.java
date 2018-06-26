@@ -1,6 +1,7 @@
 package com.holenet.cowinfo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -46,6 +47,8 @@ public class CowListFragment extends Fragment {
             @Override
             public void onCowSelected(Cow cow, int position) {
                 Log.e("onCowSelected", position+": "+cow.toString());
+                Intent intent = new Intent(CowListFragment.this.getContext(), CowDetailActivity.class);
+                startActivity(intent);
             }
         });
         attemptGetCowList();
