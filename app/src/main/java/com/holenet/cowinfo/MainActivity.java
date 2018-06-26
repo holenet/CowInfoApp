@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 user = (User) data.getSerializableExtra("user");
-                // TODO: handle success result
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }

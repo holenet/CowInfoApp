@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.holenet.cowinfo.item.Cow;
@@ -58,7 +59,7 @@ public class CowDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mIedit) {
-            // TODO: start CowEditActivity
+            // TODO: start CowEditActivity for modifying cow instance info
         } else if (id == R.id.mIdelete) {
             // TODO: delete cow instance
         } else {
@@ -107,6 +108,14 @@ public class CowDetailActivity extends AppCompatActivity {
             RecyclerView rVrecordList = view.findViewById(R.id.rVrecordList);
             rVrecordList.setLayoutManager(new LinearLayoutManager(context));
             rVrecordList.setAdapter(adapter);
+
+            Button bTaddRecord = view.findViewById(R.id.bTaddRecord);
+            bTaddRecord.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: start RecordEditActivity for creating of a record
+                }
+            });
 
             return view;
         }
