@@ -23,8 +23,7 @@ public class CowListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int columnCount = 1;
     private List<Cow> cows = new ArrayList<>();
-//    private OnListFragmentInteractionListener listener;
-    CowRecyclerAdapter adapter;
+    private CowRecyclerAdapter adapter;
 
     private GetCowListTask getCowListTask;
 
@@ -62,13 +61,13 @@ public class CowListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cow_list, container, false);
         Context context = view.getContext();
 
-        RecyclerView recyclerView = view.findViewById(R.id.rVcowList);
+        RecyclerView rVcowList = view.findViewById(R.id.rVcowList);
         if (columnCount <= 1) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            rVcowList.setLayoutManager(new LinearLayoutManager(context));
         } else {
-            recyclerView.setLayoutManager(new GridLayoutManager(context, columnCount));
+            rVcowList.setLayoutManager(new GridLayoutManager(context, columnCount));
         }
-        recyclerView.setAdapter(adapter);
+        rVcowList.setAdapter(adapter);
 
         return view;
     }
@@ -169,15 +168,15 @@ public class CowListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.cow = cows.get(position);
-            char sexSymbol = (holder.cow.sex.equals("female") ? '♀' : '♂');
-            String summary = holder.cow.number.split("-")[2]+" "+sexSymbol;
+            final Cow cow = cows.get(position);
+            char sexSymbol = cow.sex.equals("female") ? '♀' : '♂';
+            String summary = cow.number.split("-")[2]+" "+sexSymbol;
             holder.tVsummary.setText(summary);
-            holder.tVcount.setText("이력 "+String.valueOf(holder.cow.records.size()));
-            holder.tVnumber.setText(cows.get(position).number);
-            if (holder.cow.birthday != null) {
+            holder.tVcount.setText("이력 "+String.valueOf(cow.records.size()));
+            holder.tVnumber.setText(cow.number);
+            if (cow.birthday != null) {
                 holder.tVbirthday.setVisibility(View.VISIBLE);
-                holder.tVbirthday.setText("출생 "+holder.cow.birthday);
+                holder.tVbirthday.setText("출생 "+cow.birthday);
             } else {
                 holder.tVbirthday.setVisibility(View.GONE);
             }
@@ -186,7 +185,7 @@ public class CowListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onCowSelected(holder.cow, holder.getAdapterPosition());
+                        listener.onCowSelected(cow, holder.getAdapterPosition());
                     }
                 }
             });
@@ -200,7 +199,6 @@ public class CowListFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View view;
             final TextView tVsummary, tVcount, tVnumber, tVbirthday;
-            Cow cow;
 
             ViewHolder(View view) {
                 super(view);
@@ -209,11 +207,6 @@ public class CowListFragment extends Fragment {
                 tVcount = view.findViewById(R.id.tVcount);
                 tVnumber = view.findViewById(R.id.tVnumber);
                 tVbirthday = view.findViewById(R.id.tVbirthday);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + tVnumber.getText() + "'";
             }
         }
 
