@@ -42,9 +42,6 @@ public class CowDetailActivity extends AppCompatActivity {
         cows = (List<Cow>) intent.getSerializableExtra("cow_list");
         int initPosition = intent.getIntExtra("position", 0);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPcowDetail = findViewById(R.id.vPcowDetail);
         vPcowDetail.setAdapter(adapter);

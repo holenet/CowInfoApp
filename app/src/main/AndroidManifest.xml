@@ -29,8 +29,7 @@
             android:label="개체 정보 수정" />
         <activity
             android:name=".CowDetailActivity"
-            android:label="@string/title_activity_cow_detail"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="개체 상세 정보" />
     </application>
 
 </manifest>
