@@ -55,7 +55,10 @@ public class CowDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.mIedit) {
+            // TODO: start CowEditActivity
+        } else if (id == R.id.mIdelete) {
+            // TODO: delete cow instance
         } else {
             return super.onOptionsItemSelected(item);
         }
