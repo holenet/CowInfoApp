@@ -59,16 +59,16 @@ public class CowListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cow_list, container, false);
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (columnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, columnCount));
-            }
-            recyclerView.setAdapter(adapter);
+        Context context = view.getContext();
+
+        RecyclerView recyclerView = view.findViewById(R.id.rVcowList);
+        if (columnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, columnCount));
         }
+        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
