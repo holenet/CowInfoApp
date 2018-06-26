@@ -3,8 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.holenet.cowinfo.MainActivity">
     <item
+        android:id="@+id/mIcreateCow"
+        android:title="개체 추가"
+        android:icon="@drawable/ic_add_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mIsignOut"
-        android:orderInCategory="100"
         android:title="로그아웃"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mIexit"
+        android:title="종료"
         app:showAsAction="never" />
 </menu>

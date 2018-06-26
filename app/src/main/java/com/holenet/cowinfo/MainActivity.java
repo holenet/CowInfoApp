@@ -36,16 +36,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fABnewCow = findViewById(R.id.fABnewCow);
-        fABnewCow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
-                intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
-                startActivityForResult(intent, REQUEST_CREATE_COW);
-            }
-        });
-
         cowListFragment = CowListFragment.newInstance(1);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
@@ -83,13 +73,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.mIsignOut) {
+        if (id == R.id.mIcreateCow) {
+            Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
+            intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
+            startActivityForResult(intent, REQUEST_CREATE_COW);
+        } else if (id == R.id.mIsignOut) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.putExtra("signed_out", true);
             startActivityForResult(intent, REQUEST_SIGN_IN);
-            return true;
+        } else if (id == R.id.mIexit) {
+            finish();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
