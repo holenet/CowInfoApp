@@ -48,6 +48,8 @@ public class CowListFragment extends Fragment {
             public void onCowSelected(Cow cow, int position) {
                 Log.e("onCowSelected", position+": "+cow.toString());
                 Intent intent = new Intent(CowListFragment.this.getContext(), CowDetailActivity.class);
+                intent.putExtra("cow_list", (ArrayList<Cow>)cows);
+                intent.putExtra("position", position);
                 startActivity(intent);
             }
         });
