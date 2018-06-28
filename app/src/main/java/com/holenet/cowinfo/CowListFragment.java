@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CowListFragment extends Fragment {
+    public static final int REQUEST_COW_DETAIL = 501;
+
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int columnCount = 1;
     private List<Cow> cows = new ArrayList<>();
@@ -50,7 +52,7 @@ public class CowListFragment extends Fragment {
                 Intent intent = new Intent(CowListFragment.this.getContext(), CowDetailActivity.class);
                 intent.putExtra("cow_list", (ArrayList<Cow>)cows);
                 intent.putExtra("position", position);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_COW_DETAIL);
             }
         });
         attemptGetCowList();
@@ -88,6 +90,14 @@ public class CowListFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_COW_DETAIL) {
+            attemptGetCowList();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
     }
@@ -104,7 +114,6 @@ public class CowListFragment extends Fragment {
 
         @Override
         protected void responseInit(boolean isSuccessful) {
-            super.responseInit(isSuccessful);
             getHolder().getCowListTask = null;
         }
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.holenet.cowinfo.item.Cow;
+import com.holenet.cowinfo.item.Record;
 import com.holenet.cowinfo.item.User;
 
 import org.json.JSONArray;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -29,6 +31,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public class NetworkService {
@@ -80,10 +83,22 @@ public class NetworkService {
         return request(call, "getCowList");
     }
 
+    public static Result<Cow> getCow(int cowId) {
+        init();
+        Call<Cow> call = api.getCow(authenticationToken, cowId);
+        return request(call, "getCow");
+    }
+
     public static Result<Cow> createCow(Cow cow) {
         init();
         Call<Cow> call = api.createCow(authenticationToken, cow);
         return request(call, "createCow");
+    }
+
+    public static Result<Record> createRecord(Record record) {
+        init();
+        Call<Record> call = api.createRecord(authenticationToken, record);
+        return request(call, "createRecord");
     }
 
     public interface API {
@@ -101,8 +116,14 @@ public class NetworkService {
         @GET(COWS_URL)
         Call<List<Cow>> getCowList(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
 
+        @GET(COWS_URL+"{id}/")
+        Call<Cow> getCow(@Header("Authorization") String authorization, @Path("id") int id);
+
         @POST(COWS_URL)
         Call<Cow> createCow(@Header("Authorization") String authorization, @Body Cow cow);
+
+        @POST(RECORDS_URL)
+        Call<Record> createRecord(@Header("Authorization") String authorization, @Body Record record);
     }
 
     public static class Result<T> {
@@ -177,6 +198,7 @@ public class NetworkService {
                 responseFail(null);
                 return;
             }
+            Log.d("NetworkService Response", result.isSuccessful() ? "Succeeded" : "Failed");
             responseInit(result.isSuccessful());
             if (result.isSuccessful()) {
                 responseSuccess(result.getResult());
@@ -186,9 +208,7 @@ public class NetworkService {
         }
 
         protected abstract Result<R> request(P p);
-        protected void responseInit(boolean isSuccessful) {
-            Log.d("NetworkService Response", isSuccessful ? "Succeeded" : "Failed");
-        }
+        protected abstract void responseInit(boolean isSuccessful);
         protected abstract void responseSuccess(R r);
         protected abstract void responseFail(Map<String, String> errors);
         protected boolean existErrors(Map<String, String> errors, Context context) {
@@ -212,5 +232,9 @@ public class NetworkService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String constructDate(int year, int month, int day) {
+        return String.format(Locale.KOREA, "%d-%d-%d", year, month, day);
     }
 }

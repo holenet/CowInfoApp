@@ -30,6 +30,9 @@
         <activity
             android:name=".CowDetailActivity"
             android:label="개체 상세 정보" />
+        <activity
+            android:name=".EditRecordActivity"
+            android:label="이력 정보 수정" />
     </application>
 
 </manifest>

@@ -309,7 +309,6 @@ public class SignInActivity extends AppCompatActivity {
 
         @Override
         protected void responseInit(boolean isSuccessful) {
-            super.responseInit(isSuccessful);
             getHolder().signInTask = null;
         }
 
@@ -338,7 +337,6 @@ public class SignInActivity extends AppCompatActivity {
 
         @Override
         protected void responseInit(boolean isSuccessful) {
-            super.responseInit(isSuccessful);
             getHolder().signUpTask = null;
         }
 

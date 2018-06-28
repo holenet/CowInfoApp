@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.holenet.cowinfo.NetworkService.constructDate;
+
 public class EditCowActivity extends AppCompatActivity {
     public static int MODE_CREATE = 301;
     public static int MODE_MODIFY = 302;
@@ -44,6 +46,8 @@ public class EditCowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_cow);
+
+        setResult(RESULT_CANCELED);
 
         rBfemale = findViewById(R.id.rBfemale);
         eTnumber = findViewById(R.id.eTnumber);
@@ -64,7 +68,7 @@ public class EditCowActivity extends AppCompatActivity {
 
         Calendar today = Calendar.getInstance();
         year = today.get(Calendar.YEAR);
-        month = today.get(Calendar.MONTH);
+        month = today.get(Calendar.MONTH) + 1;
         day = today.get(Calendar.DAY_OF_MONTH);
 
         bTeditBirthday.setOnClickListener(new View.OnClickListener() {
@@ -104,8 +108,6 @@ public class EditCowActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int edit_mode = intent.getIntExtra("edit_mode", 0);
-        if (edit_mode == 0)
-            finish();
         if (edit_mode == MODE_CREATE) {
             getSupportActionBar().setTitle("새로운 개체 추가");
             eTnumber.requestFocus();
@@ -121,8 +123,6 @@ public class EditCowActivity extends AppCompatActivity {
         } else {
             finish();
         }
-
-        setResult(RESULT_CANCELED);
     }
 
     private void attemptSave() {
@@ -151,7 +151,7 @@ public class EditCowActivity extends AppCompatActivity {
         if (tVbirthday.getText().toString().equals("지정 안함"))
             birthday = null;
         else
-            birthday = String.format(Locale.KOREA, "%d-%d-%d", year, month, day);
+            birthday = constructDate(year, month, day);
 
         Cow cow;
         if (this.cow == null) {
@@ -302,7 +302,6 @@ public class EditCowActivity extends AppCompatActivity {
 
         @Override
         protected void responseInit(boolean isSuccessful) {
-            super.responseInit(isSuccessful);
             getHolder().saveCowTask = null;
         }
 

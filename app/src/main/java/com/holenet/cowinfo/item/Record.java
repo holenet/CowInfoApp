@@ -11,6 +11,13 @@ public class Record implements Serializable {
     public String day;
     public Integer cow;
 
+    public Record(String content, String etc, String day, Integer cow) {
+        this.content = content;
+        this.etc = etc;
+        this.day = day;
+        this.cow = cow;
+    }
+
     public String getKoreanDay() {
         String[] days = this.day.split("-");
         int year = Integer.parseInt(days[0]);
