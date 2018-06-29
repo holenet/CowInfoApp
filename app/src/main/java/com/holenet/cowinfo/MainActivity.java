@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
             intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
             startActivityForResult(intent, REQUEST_CREATE_COW);
+        } else if (id == R.id.mIrefresh) {
+            if (cowListFragment != null) {
+                cowListFragment.attemptGetCowList();
+            }
         } else if (id == R.id.mIsignOut) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.putExtra("signed_out", true);
