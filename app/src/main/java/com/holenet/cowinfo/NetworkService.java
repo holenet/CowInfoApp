@@ -110,6 +110,12 @@ public class NetworkService {
         return request(call, "createRecord");
     }
 
+    public static Result<Record> updateRecord(Record record) {
+        init();
+        Call<Record> call = api.updateRecord(authenticationToken, record.id, record);
+        return request(call, "updateRecord");
+    }
+
     public interface API {
         String BASE_URL = "http://13.125.31.214";
         String USERS_URL = BASE_URL + "/users/";
@@ -136,6 +142,9 @@ public class NetworkService {
 
         @POST(RECORDS_URL)
         Call<Record> createRecord(@Header("Authorization") String authorization, @Body Record record);
+
+        @PATCH(RECORDS_URL+"{id}/")
+        Call<Record> updateRecord(@Header("Authorization") String authorization, @Path("id") int id, @Body Record record);
     }
 
     public static class Result<T> {

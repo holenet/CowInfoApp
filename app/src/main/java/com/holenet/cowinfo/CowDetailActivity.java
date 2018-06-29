@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,6 +71,9 @@ public class CowDetailActivity extends AppCompatActivity {
     public static class CowDetailFragment extends Fragment {
         public static final int REQUEST_UPDATE_COW = 400;
         public static final int REQUEST_CREATE_RECORD = 401;
+        public static final int REQUEST_UPDATE_RECORD = 402;
+        public static final int MENU_UPDATE_RECORD = 300;
+        public static final int MENU_DELETE_RECORD = 301;
 
         private static final String ARG_COW = "cow";
         private Cow cow;
@@ -95,11 +99,13 @@ public class CowDetailActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_cow_detail, container, false);
             Context context = view.getContext();
 
+            Cow cow = (Cow) getArguments().getSerializable(ARG_COW);
+
             tVnumber = view.findViewById(R.id.tVnumber);
             tVmotherNumber = view.findViewById(R.id.tVmotherNumber);
             tVbirthday = view.findViewById(R.id.tVbirthday);
 
-            adapter = new RecordRecyclerAdapter(new ArrayList<Record>());
+            adapter = new RecordRecyclerAdapter(cow.id, new ArrayList<Record>());
             RecyclerView rVrecordList = view.findViewById(R.id.rVrecordList);
             rVrecordList.setLayoutManager(new LinearLayoutManager(context));
             rVrecordList.setAdapter(adapter);
@@ -110,7 +116,7 @@ public class CowDetailActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(CowDetailFragment.this.getContext(), EditCowActivity.class);
                     intent.putExtra("edit_mode", EditCowActivity.MODE_UPDATE);
-                    intent.putExtra("cow", cow);
+                    intent.putExtra("cow", CowDetailFragment.this.cow);
                     startActivityForResult(intent, REQUEST_UPDATE_COW);
                 }
             });
@@ -120,13 +126,13 @@ public class CowDetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(CowDetailFragment.this.getContext(), EditRecordActivity.class);
-                    intent.putExtra("cow_id", cow.id);
+                    intent.putExtra("cow_id", CowDetailFragment.this.cow.id);
                     intent.putExtra("edit_mode", EditRecordActivity.MODE_CREATE);
                     startActivityForResult(intent, REQUEST_CREATE_RECORD);
                 }
             });
 
-            updateInfo((Cow) getArguments().getSerializable(ARG_COW));
+            updateInfo(cow);
 
             return view;
         }
@@ -154,8 +160,33 @@ public class CowDetailActivity extends AppCompatActivity {
         }
 
         @Override
+        public boolean onContextItemSelected(MenuItem item) {
+            if (item.getGroupId() != cow.id)
+                return false;
+            final int index = item.getIntent().getIntExtra("index", -1);
+            if (index == -1)
+                return false;
+            final Record record = adapter.getItem(index);
+            final int itemId = item.getItemId();
+            if (itemId == MENU_UPDATE_RECORD) {
+                Intent intent = new Intent(CowDetailFragment.this.getContext(), EditRecordActivity.class);
+                intent.putExtra("cow_id", cow.id);
+                intent.putExtra("edit_mode", EditRecordActivity.MODE_UPDATE);
+                intent.putExtra("record", record);
+                startActivityForResult(intent, REQUEST_UPDATE_RECORD);
+            } else if (itemId == MENU_DELETE_RECORD) {
+                // TODO: show confirmation dialog and request delete record
+            } else {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            if (requestCode == REQUEST_CREATE_RECORD || requestCode == REQUEST_UPDATE_COW) {
+            if (requestCode == REQUEST_CREATE_RECORD ||
+                    requestCode == REQUEST_UPDATE_COW ||
+                    requestCode == REQUEST_UPDATE_RECORD) {
                 if (resultCode == RESULT_OK) {
                     attemptGetCow();
                 }
@@ -164,9 +195,11 @@ public class CowDetailActivity extends AppCompatActivity {
         }
 
         static class RecordRecyclerAdapter extends RecyclerView.Adapter<RecordRecyclerAdapter.ViewHolder> {
+            private final int cowId;
             private final List<Record> records;
 
-            public RecordRecyclerAdapter(List<Record> items) {
+            public RecordRecyclerAdapter(int cowId, List<Record> items) {
+                this.cowId = cowId;
                 records = items;
             }
 
@@ -184,6 +217,10 @@ public class CowDetailActivity extends AppCompatActivity {
                 holder.tVcontent.setText(record.content);
                 holder.tVetc.setText(record.etc);
                 holder.tVday.setText(record.getKoreanDay());
+            }
+
+            public Record getItem(int index) {
+                return records.get(index);
             }
 
             public void setItems(List<Record> records) {
@@ -204,6 +241,16 @@ public class CowDetailActivity extends AppCompatActivity {
                 ViewHolder(View view) {
                     super(view);
                     this.view = view;
+                    view.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                        @Override
+                        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                            Intent intent = new Intent();
+                            intent.putExtra("index", getAdapterPosition());
+                            menu.add(cowId, MENU_UPDATE_RECORD, Menu.NONE, "이력 수정").setIntent(intent);
+                            menu.add(cowId, MENU_DELETE_RECORD, Menu.NONE, "이력 삭제").setIntent(intent);
+                        }
+                    });
+
                     tVcontent = view.findViewById(R.id.tVcontent);
                     tVetc = view.findViewById(R.id.tVetc);
                     tVday = view.findViewById(R.id.tVday);

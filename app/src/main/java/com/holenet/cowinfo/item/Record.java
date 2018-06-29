@@ -11,6 +11,15 @@ public class Record implements Serializable {
     public String day;
     public Integer cow;
 
+    public Record(Record record, String content, String etc, String day, Integer cow) {
+        this.id = record.id;
+        this.created = record.created;
+        this.content = content;
+        this.etc = etc;
+        this.day = day;
+        this.cow = cow;
+    }
+
     public Record(String content, String etc, String day, Integer cow) {
         this.content = content;
         this.etc = etc;

@@ -21,12 +21,14 @@ import android.widget.Toast;
 import com.holenet.cowinfo.item.Record;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import static com.holenet.cowinfo.NetworkService.constructDate;
+import static com.holenet.cowinfo.NetworkService.destructDate;
 
 public class EditRecordActivity extends AppCompatActivity {
     public static int MODE_CREATE = 301;
@@ -167,7 +169,16 @@ public class EditRecordActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("새로운 이력 추가");
         } else if (edit_mode == MODE_UPDATE) {
             getSupportActionBar().setTitle("이력 정보 수정");
-            // TODO: Load record instance from intent and apply onto UI
+            record = (Record) intent.getSerializableExtra("record");
+
+            sPcontent.setSelection(Arrays.asList(contents).indexOf(record.content));
+
+            if (record.etc != null) {
+                eTetc.setText(record.etc);
+            }
+
+            int[] days = destructDate(record.day);
+            setDates(days[0], days[1], days[2]);
         } else {
             finish();
         }
@@ -220,8 +231,7 @@ public class EditRecordActivity extends AppCompatActivity {
         if (this.record == null) {
             record = new Record(content, etc, constructDate(year, month, day), cowId);
         } else {
-            // TODO: make updated record instance
-            record = this.record;
+            record = new Record(this.record, content, etc, constructDate(year, month, day), cowId);
         }
         saveRecordTaskInfo.addRecord(record);
 
@@ -238,8 +248,7 @@ public class EditRecordActivity extends AppCompatActivity {
             if (record.id == null) {
                 return NetworkService.createRecord(record);
             } else {
-                // TODO: request update record instance
-                return null;
+                return NetworkService.updateRecord(record);
             }
         }
 
