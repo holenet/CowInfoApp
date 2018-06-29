@@ -14,6 +14,17 @@ public class Cow implements Serializable {
     public String mother_number;
     public String birthday;
 
+    public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, String birthday) {
+        this.id = id;
+        this.records = records;
+        this.created = created;
+        this.deleted = deleted;
+        this.sex = sex;
+        this.number = number;
+        this.mother_number = mother_number;
+        this.birthday = birthday;
+    }
+
     public Cow(String sex, String number, String mother_number, String birthday) {
         this.sex = sex;
         this.number = number;
@@ -45,6 +56,10 @@ public class Cow implements Serializable {
     public String getSummary() {
         char sexSymbol = sex.equals("female") ? '♀' : '♂';
         return number.split("-")[2] + " " + sexSymbol;
+    }
+
+    public Cow copy() {
+        return new Cow(id, records, created, deleted, sex, number, mother_number, birthday);
     }
 
     @Override

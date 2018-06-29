@@ -1,10 +1,12 @@
 package com.holenet.cowinfo;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.holenet.cowinfo.item.Cow;
 import com.holenet.cowinfo.item.Record;
@@ -51,6 +54,16 @@ public class CowDetailActivity extends AppCompatActivity {
         vPcowDetail.setCurrentItem(initPosition);
     }
 
+    private void attemptDeleteCow(Cow cow) {
+        DeleteCowTask task = new DeleteCowTask(this, cow.copy());
+        task.execute();
+    }
+
+    private void onSuccessDeleteCow() {
+        Toast.makeText(this, "삭제된 개체는 휴지통 메뉴에서 복원 할 수 있습니다.", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cow_detail, menu);
@@ -59,9 +72,21 @@ public class CowDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final Cow cow = cows.get(vPcowDetail.getCurrentItem());
+
         int id = item.getItemId();
         if (id == R.id.mIdelete) {
-            // TODO: delete cow instance
+            new AlertDialog.Builder(this)
+                    .setTitle(cow.number)
+                    .setMessage("삭제하시겠습니까?")
+                    .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            attemptDeleteCow(cow);
+                        }
+                    })
+                    .setNegativeButton("아니오", null)
+                    .show();
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -314,6 +339,36 @@ public class CowDetailActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return cows.get(position).getSummary();
+        }
+    }
+
+    private static class DeleteCowTask extends NetworkService.Task<CowDetailActivity, Void, Cow> {
+        private Cow cow;
+
+        public DeleteCowTask(CowDetailActivity holder, Cow cow) {
+            super(holder);
+            this.cow = cow;
+        }
+
+        @Override
+        protected NetworkService.Result<Cow> request(Void aVoid) {
+            cow.deleted = true;
+            return NetworkService.updateCow(cow);
+        }
+
+        @Override
+        protected void responseInit(boolean isSuccessful) {}
+
+        @Override
+        protected void responseSuccess(Cow cow) {
+            getHolder().onSuccessDeleteCow();
+        }
+
+        @Override
+        protected void responseFail(Map<String, String> errors) {
+            if (existErrors(errors, getHolder())) {
+                Toast.makeText(getHolder(), "삭제에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

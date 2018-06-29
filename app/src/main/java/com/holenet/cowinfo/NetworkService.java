@@ -82,7 +82,7 @@ public class NetworkService {
 
     public static Result<List<Cow>> getCowList(boolean deleted) {
         init();
-        Call<List<Cow>> call = api.getCowList(authenticationToken, deleted);
+        Call<List<Cow>> call = api.getCowList(authenticationToken, stringify(deleted));
         return request(call, "getCowList");
     }
 
@@ -129,7 +129,7 @@ public class NetworkService {
         Call<User> signUp(@Body User user);
 
         @GET(COWS_URL)
-        Call<List<Cow>> getCowList(@Header("Authorization") String authorization, @Query("deleted") boolean deleted);
+        Call<List<Cow>> getCowList(@Header("Authorization") String authorization, @Query("deleted") String deleted);
 
         @GET(COWS_URL+"{id}/")
         Call<Cow> getCow(@Header("Authorization") String authorization, @Path("id") int id);
@@ -265,5 +265,9 @@ public class NetworkService {
         int month = Integer.parseInt(days[1]);
         int day = Integer.parseInt(days[2]);
         return new int[] {year, month, day};
+    }
+
+    public static String stringify(boolean bool) {
+        return bool ? "True" : "False";
     }
 }
