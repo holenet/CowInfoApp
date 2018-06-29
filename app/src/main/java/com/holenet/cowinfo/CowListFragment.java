@@ -147,9 +147,7 @@ public class CowListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             final Cow cow = cows.get(position);
-            char sexSymbol = cow.sex.equals("female") ? '♀' : '♂';
-            String summary = cow.number.split("-")[2]+" "+sexSymbol;
-            holder.tVsummary.setText(summary);
+            holder.tVsummary.setText(cow.getSummary());
             holder.tVcount.setText("이력 "+String.valueOf(cow.records.size()));
             holder.tVnumber.setText(cow.number);
             if (cow.birthday != null) {

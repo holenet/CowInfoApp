@@ -30,7 +30,7 @@ import static com.holenet.cowinfo.NetworkService.constructDate;
 
 public class EditRecordActivity extends AppCompatActivity {
     public static int MODE_CREATE = 301;
-    public static int MODE_MODIFY = 302;
+    public static int MODE_UPDATE = 302;
 
     public static String[] contents = new String[] {
             "수정",
@@ -165,7 +165,7 @@ public class EditRecordActivity extends AppCompatActivity {
         int edit_mode = intent.getIntExtra("edit_mode", 0);
         if (edit_mode == MODE_CREATE) {
             getSupportActionBar().setTitle("새로운 이력 추가");
-        } else if (edit_mode == MODE_MODIFY) {
+        } else if (edit_mode == MODE_UPDATE) {
             getSupportActionBar().setTitle("이력 정보 수정");
             // TODO: Load record instance from intent and apply onto UI
         } else {

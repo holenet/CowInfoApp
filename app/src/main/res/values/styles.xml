@@ -13,6 +13,10 @@
         <item name="android:textColor">@color/textColor</item>
     </style>
 
+    <style name="PagerTitleStripLarge">
+        <item name="android:textSize">@dimen/text_size_huge</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

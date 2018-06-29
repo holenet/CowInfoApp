@@ -3,6 +3,7 @@ package com.holenet.cowinfo;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -58,9 +59,7 @@ public class CowDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.mIedit) {
-            // TODO: start CowEditActivity for modifying cow instance info
-        } else if (id == R.id.mIdelete) {
+        if (id == R.id.mIdelete) {
             // TODO: delete cow instance
         } else {
             return super.onOptionsItemSelected(item);
@@ -69,6 +68,7 @@ public class CowDetailActivity extends AppCompatActivity {
     }
 
     public static class CowDetailFragment extends Fragment {
+        public static final int REQUEST_UPDATE_COW = 400;
         public static final int REQUEST_CREATE_RECORD = 401;
 
         private static final String ARG_COW = "cow";
@@ -91,7 +91,7 @@ public class CowDetailActivity extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_cow_detail, container, false);
             Context context = view.getContext();
 
@@ -103,6 +103,17 @@ public class CowDetailActivity extends AppCompatActivity {
             RecyclerView rVrecordList = view.findViewById(R.id.rVrecordList);
             rVrecordList.setLayoutManager(new LinearLayoutManager(context));
             rVrecordList.setAdapter(adapter);
+
+            Button bTeditInfo = view.findViewById(R.id.bTeditInfo);
+            bTeditInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(CowDetailFragment.this.getContext(), EditCowActivity.class);
+                    intent.putExtra("edit_mode", EditCowActivity.MODE_UPDATE);
+                    intent.putExtra("cow", cow);
+                    startActivityForResult(intent, REQUEST_UPDATE_COW);
+                }
+            });
 
             Button bTaddRecord = view.findViewById(R.id.bTaddRecord);
             bTaddRecord.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +155,7 @@ public class CowDetailActivity extends AppCompatActivity {
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            if (requestCode == REQUEST_CREATE_RECORD) {
+            if (requestCode == REQUEST_CREATE_RECORD || requestCode == REQUEST_UPDATE_COW) {
                 if (resultCode == RESULT_OK) {
                     attemptGetCow();
                 }
@@ -242,6 +253,7 @@ public class CowDetailActivity extends AppCompatActivity {
                 @Override
                 public void onCowUpdated(Cow cow) {
                     cows.set(position, cow);
+                    notifyDataSetChanged();
                 }
             });
         }
@@ -249,6 +261,12 @@ public class CowDetailActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return cows.size();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return cows.get(position).getSummary();
         }
     }
 }

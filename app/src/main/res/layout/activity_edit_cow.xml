@@ -32,6 +32,7 @@
                 android:text="암컷" />
 
             <RadioButton
+                android:id="@+id/rBmale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"

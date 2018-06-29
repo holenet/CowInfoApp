@@ -28,14 +28,15 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.holenet.cowinfo.NetworkService.constructDate;
+import static com.holenet.cowinfo.NetworkService.destructDate;
 
 public class EditCowActivity extends AppCompatActivity {
     public static int MODE_CREATE = 301;
-    public static int MODE_MODIFY = 302;
+    public static int MODE_UPDATE = 302;
 
     private SaveCowTask saveCowTask;
 
-    private RadioButton rBfemale;
+    private RadioButton rBfemale, rBmale;
     private EditText eTnumber, eTmotherNumber;
     private TextView tVbirthday;
     private int year, month, day;
@@ -50,6 +51,7 @@ public class EditCowActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
 
         rBfemale = findViewById(R.id.rBfemale);
+        rBmale = findViewById(R.id.rBmale);
         eTnumber = findViewById(R.id.eTnumber);
         eTmotherNumber = findViewById(R.id.eTmotherNumber);
         tVbirthday = findViewById(R.id.tVbirthday);
@@ -117,9 +119,27 @@ public class EditCowActivity extends AppCompatActivity {
                     ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(eTnumber, 0);
                 }
             }, 100);
-        } else if (edit_mode == MODE_MODIFY) {
+        } else if (edit_mode == MODE_UPDATE) {
             getSupportActionBar().setTitle("개체 정보 수정");
-            // TODO: Load cow instance from intent and apply onto UI
+            cow = (Cow) intent.getSerializableExtra("cow");
+
+            boolean isMale = "male".equals(cow.sex);
+            rBfemale.setChecked(!isMale);
+            rBmale.setChecked(isMale);
+
+            eTnumber.setText(cow.number);
+
+            if (cow.mother_number != null) {
+                eTmotherNumber.setText(cow.mother_number);
+            }
+
+            if (cow.birthday != null) {
+                tVbirthday.setText(cow.getKoreanBirthday());
+                int[] days = destructDate(cow.birthday);
+                year = days[0];
+                month = days[1];
+                day = days[2];
+            }
         } else {
             finish();
         }
@@ -157,8 +177,7 @@ public class EditCowActivity extends AppCompatActivity {
         if (this.cow == null) {
             cow = new Cow(sex, number, motherNumber, birthday);
         } else {
-            // TODO: make updated cow instance
-            cow = this.cow;
+            cow = new Cow(this.cow, sex, number, motherNumber, birthday);
         }
 
         saveCowTask = new SaveCowTask(this);
@@ -295,8 +314,7 @@ public class EditCowActivity extends AppCompatActivity {
             if (cow.id == null) {
                 return NetworkService.createCow(cow);
             } else {
-                // TODO: request update cow instance
-                return null;
+                return NetworkService.updateCow(cow);
             }
         }
 

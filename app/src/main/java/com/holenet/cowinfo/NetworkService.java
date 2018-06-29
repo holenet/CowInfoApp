@@ -7,6 +7,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.GsonBuilder;
 import com.holenet.cowinfo.item.Cow;
 import com.holenet.cowinfo.item.Record;
 import com.holenet.cowinfo.item.User;
@@ -30,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -46,8 +48,9 @@ public class NetworkService {
         if (api == null) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(API.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+                    .addConverterFactory(GsonConverterFactory.create(
+                            new GsonBuilder().serializeNulls().create())
+                    ).build();
             api = retrofit.create(API.class);
         }
     }
@@ -95,6 +98,12 @@ public class NetworkService {
         return request(call, "createCow");
     }
 
+    public static Result<Cow> updateCow(Cow cow) {
+        init();
+        Call<Cow> call = api.updateCow(authenticationToken, cow.id, cow);
+        return request(call, "updateCow");
+    }
+
     public static Result<Record> createRecord(Record record) {
         init();
         Call<Record> call = api.createRecord(authenticationToken, record);
@@ -122,6 +131,9 @@ public class NetworkService {
         @POST(COWS_URL)
         Call<Cow> createCow(@Header("Authorization") String authorization, @Body Cow cow);
 
+        @PATCH(COWS_URL+"{id}/")
+        Call<Cow> updateCow(@Header("Authorization") String authorization, @Path("id") int id, @Body Cow cow);
+
         @POST(RECORDS_URL)
         Call<Record> createRecord(@Header("Authorization") String authorization, @Body Record record);
     }
@@ -141,13 +153,13 @@ public class NetworkService {
                     String raw = response.errorBody().string();
                     JSONObject json = new JSONObject(raw);
                     Iterator<String> iterator = json.keys();
-                    while(iterator.hasNext()) {
+                    while (iterator.hasNext()) {
                         String key = iterator.next();
                         ArrayList<String> strings = new ArrayList<>();
                         JSONArray errorList;
                         try {
                             errorList = json.getJSONArray(key);
-                        } catch(JSONException e) {
+                        } catch (JSONException e) {
                             errorList = new JSONArray("[\""+json.getString(key)+"\"]");
                         }
                         for(int i=0; i<errorList.length(); i++) {
@@ -155,7 +167,7 @@ public class NetworkService {
                         }
                         errors.put(key, TextUtils.join("\n", strings));
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -236,5 +248,13 @@ public class NetworkService {
 
     public static String constructDate(int year, int month, int day) {
         return String.format(Locale.KOREA, "%d-%d-%d", year, month, day);
+    }
+
+    public static int[] destructDate(String date) {
+        String[] days = date.split("-");
+        int year = Integer.parseInt(days[0]);
+        int month = Integer.parseInt(days[1]);
+        int day = Integer.parseInt(days[2]);
+        return new int[] {year, month, day};
     }
 }
