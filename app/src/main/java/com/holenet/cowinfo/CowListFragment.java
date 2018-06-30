@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,17 +21,18 @@ import java.util.Map;
 public class CowListFragment extends Fragment {
     public static final int REQUEST_COW_DETAIL = 501;
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    private int columnCount = 1;
+    private static final String ARG_IS_DELETED_LIST = "is_deleted_list";
+    private boolean isDeletedList = false;
+
     private List<Cow> cows = new ArrayList<>();
     private CowRecyclerAdapter adapter;
 
     private GetCowListTask getCowListTask;
 
-    public static CowListFragment newInstance(int columnCount) {
+    public static CowListFragment newInstance(boolean isDeletedList) {
         CowListFragment fragment = new CowListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putBoolean(ARG_IS_DELETED_LIST, isDeletedList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,8 +41,9 @@ public class CowListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            isDeletedList = arguments.getBoolean(ARG_IS_DELETED_LIST);
         }
 
         adapter = new CowRecyclerAdapter(cows, new CowRecyclerAdapter.OnCowSelectedListener() {
@@ -64,11 +65,7 @@ public class CowListFragment extends Fragment {
         Context context = view.getContext();
 
         RecyclerView rVcowList = view.findViewById(R.id.rVcowList);
-        if (columnCount <= 1) {
-            rVcowList.setLayoutManager(new LinearLayoutManager(context));
-        } else {
-            rVcowList.setLayoutManager(new GridLayoutManager(context, columnCount));
-        }
+        rVcowList.setLayoutManager(new LinearLayoutManager(context));
         rVcowList.setAdapter(adapter);
 
         return view;
@@ -80,13 +77,24 @@ public class CowListFragment extends Fragment {
         }
 
         getCowListTask = new GetCowListTask(this);
-        getCowListTask.execute(false);
+        getCowListTask.execute(isDeletedList);
     }
 
     private void setCowList(List<Cow> cows) {
         this.cows.clear();
         this.cows.addAll(cows);
         adapter.notifyDataSetChanged();
+    }
+
+    public void setIsDeletedList(boolean isDeletedList) {
+        if (this.isDeletedList != isDeletedList) {
+            this.isDeletedList = isDeletedList;
+            attemptGetCowList();
+        }
+    }
+
+    public boolean isDeletedList() {
+        return isDeletedList;
     }
 
     @Override

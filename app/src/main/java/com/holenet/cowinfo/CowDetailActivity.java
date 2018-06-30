@@ -52,11 +52,46 @@ public class CowDetailActivity extends AppCompatActivity {
         vPcowDetail = findViewById(R.id.vPcowDetail);
         vPcowDetail.setAdapter(adapter);
         vPcowDetail.setCurrentItem(initPosition);
+        vPcowDetail.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            int last = -1;
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (menu != null && last != position) {
+                    last = position;
+                    Cow cow = cows.get(position);
+                    menu.findItem(R.id.mIdelete).setVisible(!cow.deleted);
+                    menu.findItem(R.id.mIrestore).setVisible(cow.deleted);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {}
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
     }
 
     private void attemptDeleteCow(Cow cow) {
-        DeleteCowTask task = new DeleteCowTask(this, cow.copy());
-        task.execute();
+        cow = cow.copy();
+        cow.deleted = true;
+        UpdateCowTask task = new UpdateCowTask(this);
+        task.execute(cow);
+    }
+
+    private void attemptRestoreCow(Cow cow) {
+        cow = cow.copy();
+        cow.deleted = false;
+        UpdateCowTask task = new UpdateCowTask(this);
+        task.execute(cow);
+    }
+
+    private void attemptDestroyCow(Cow cow) {
+        cow = cow.copy();
+        cow.deleted = true;
+        DestroyCowTask task = new DestroyCowTask(this);
+        task.execute(cow.id);
     }
 
     private void onSuccessDeleteCow() {
@@ -64,9 +99,29 @@ public class CowDetailActivity extends AppCompatActivity {
         finish();
     }
 
+    private void onSuccessRestoreCow() {
+        Toast.makeText(this, "성공적으로 복원되었습니다.", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    private void onSuccessDestroyCow() {
+        Toast.makeText(this, "완전히 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    Menu menu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_cow_detail, menu);
+        if (vPcowDetail != null) {
+            int position = vPcowDetail.getCurrentItem();
+            if (0 <= position && position < cows.size()) {
+                Cow cow = cows.get(position);
+                menu.findItem(R.id.mIdelete).setVisible(!cow.deleted);
+                menu.findItem(R.id.mIrestore).setVisible(cow.deleted);
+            }
+        }
         return true;
     }
 
@@ -83,6 +138,30 @@ public class CowDetailActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             attemptDeleteCow(cow);
+                        }
+                    })
+                    .setNegativeButton("아니오", null)
+                    .show();
+        } else if (id == R.id.mIrestore) {
+            new AlertDialog.Builder(this)
+                    .setTitle(cow.number)
+                    .setMessage("복원하시겠습니까?")
+                    .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            attemptRestoreCow(cow);
+                        }
+                    })
+                    .setNegativeButton("아니오", null)
+                    .show();
+        } else if (id == R.id.mIdestroy) {
+            new AlertDialog.Builder(this)
+                    .setTitle(cow.number)
+                    .setMessage("완전 삭제하시겠습니까?\n(이 동작은 되돌릴 수 없습니다.)")
+                    .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            attemptDestroyCow(cow);
                         }
                     })
                     .setNegativeButton("아니오", null)
@@ -342,17 +421,13 @@ public class CowDetailActivity extends AppCompatActivity {
         }
     }
 
-    private static class DeleteCowTask extends NetworkService.Task<CowDetailActivity, Void, Cow> {
-        private Cow cow;
-
-        public DeleteCowTask(CowDetailActivity holder, Cow cow) {
+    private static class UpdateCowTask extends NetworkService.Task<CowDetailActivity, Cow, Cow> {
+        public UpdateCowTask(CowDetailActivity holder) {
             super(holder);
-            this.cow = cow;
         }
 
         @Override
-        protected NetworkService.Result<Cow> request(Void aVoid) {
-            cow.deleted = true;
+        protected NetworkService.Result<Cow> request(Cow cow) {
             return NetworkService.updateCow(cow);
         }
 
@@ -361,13 +436,43 @@ public class CowDetailActivity extends AppCompatActivity {
 
         @Override
         protected void responseSuccess(Cow cow) {
-            getHolder().onSuccessDeleteCow();
+            if (cow.deleted) {
+                getHolder().onSuccessDeleteCow();
+            } else {
+                getHolder().onSuccessRestoreCow();
+            }
         }
 
         @Override
         protected void responseFail(Map<String, String> errors) {
             if (existErrors(errors, getHolder())) {
-                Toast.makeText(getHolder(), "삭제에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getHolder(), "실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private static class DestroyCowTask extends NetworkService.Task<CowDetailActivity, Integer, Void> {
+        public DestroyCowTask(CowDetailActivity holder) {
+            super(holder);
+        }
+
+        @Override
+        protected NetworkService.Result<Void> request(Integer cowId) {
+            return NetworkService.destroyCow(cowId);
+        }
+
+        @Override
+        protected void responseInit(boolean isSuccessful) {}
+
+        @Override
+        protected void responseSuccess(Void aVoid) {
+            getHolder().onSuccessDestroyCow();
+        }
+
+        @Override
+        protected void responseFail(Map<String, String> errors) {
+            if (existErrors(errors, getHolder())) {
+                Toast.makeText(getHolder(), "완전 삭제에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
             }
         }
     }

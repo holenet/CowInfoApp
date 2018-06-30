@@ -29,6 +29,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
@@ -104,6 +105,12 @@ public class NetworkService {
         return request(call, "updateCow");
     }
 
+    public static Result<Void> destroyCow(int cowId) {
+        init();
+        Call<Void> call = api.destroyCow(authenticationToken, cowId);
+        return request(call, "destroyCow");
+    }
+
     public static Result<Record> createRecord(Record record) {
         init();
         Call<Record> call = api.createRecord(authenticationToken, record);
@@ -139,6 +146,9 @@ public class NetworkService {
 
         @PATCH(COWS_URL+"{id}/")
         Call<Cow> updateCow(@Header("Authorization") String authorization, @Path("id") int id, @Body Cow cow);
+
+        @DELETE(COWS_URL+"{id}/")
+        Call<Void> destroyCow(@Header("Authorization") String authorization, @Path("id") int id);
 
         @POST(RECORDS_URL)
         Call<Record> createRecord(@Header("Authorization") String authorization, @Body Record record);
@@ -245,7 +255,7 @@ public class NetworkService {
         Log.i(tag+" Response", response.isSuccessful() ? "Success" : "Fail");
         Log.i(tag+" Response", response.code()+" "+response.message());
         if (response.isSuccessful()) {
-            Log.i(tag+" Response", "body:"+response.body().toString());
+            Log.i(tag+" Response", "body:"+(response.body() != null ? response.body().toString() : null));
         } else {
             try {
                 Log.i(tag+" Response", "error: "+response.errorBody().toString());

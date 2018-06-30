@@ -26,6 +26,7 @@ public class Cow implements Serializable {
     }
 
     public Cow(String sex, String number, String mother_number, String birthday) {
+        this.deleted = false;
         this.sex = sex;
         this.number = number;
         this.mother_number = mother_number;

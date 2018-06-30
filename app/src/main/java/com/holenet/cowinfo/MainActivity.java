@@ -3,14 +3,12 @@ package com.holenet.cowinfo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -36,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        cowListFragment = CowListFragment.newInstance(1);
+        cowListFragment = CowListFragment.newInstance(false);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
@@ -63,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    Menu menu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -80,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
             if (cowListFragment != null) {
                 cowListFragment.attemptGetCowList();
             }
+        } else if (id == R.id.mIdeleted) {
+            cowListFragment.setIsDeletedList(true);
+            menu.findItem(R.id.mIdeleted).setVisible(false);
+            adapter.notifyDataSetChanged();
         } else if (id == R.id.mIsignOut) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.putExtra("signed_out", true);
@@ -90,6 +94,17 @@ public class MainActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (cowListFragment != null && cowListFragment.isDeletedList()) {
+            cowListFragment.setIsDeletedList(false);
+            menu.findItem(R.id.mIdeleted).setVisible(true);
+            adapter.notifyDataSetChanged();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
@@ -116,7 +131,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             switch(position) {
-                case 0: return "개체 목록";
+                case 0:
+                    if (cowListFragment != null && cowListFragment.isDeletedList())
+                        return "휴지통 개체 목록";
+                    return "개체 목록";
                 case 1: return "달력";
                 default: return null;
             }

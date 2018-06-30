@@ -13,6 +13,10 @@
         android:icon="@drawable/ic_refresh_black_24dp"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/mIdeleted"
+        android:title="휴지통"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mIsignOut"
         android:title="로그아웃"
         app:showAsAction="never" />
