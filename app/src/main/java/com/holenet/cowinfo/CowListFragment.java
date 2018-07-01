@@ -8,6 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -29,6 +32,8 @@ public class CowListFragment extends Fragment {
 
     private GetCowListTask getCowListTask;
 
+    private MainActivity.OnDataChangedListener onDataChangedListener;
+
     public static CowListFragment newInstance(boolean isDeletedList) {
         CowListFragment fragment = new CowListFragment();
         Bundle args = new Bundle();
@@ -40,6 +45,8 @@ public class CowListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
 
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -71,6 +78,25 @@ public class CowListFragment extends Fragment {
         return view;
     }
 
+    Menu menu;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        inflater.inflate(R.menu.menu_cow_list, menu);
+        menu.findItem(R.id.mIdeleted).setVisible(!isDeletedList);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.mIrefresh) {
+            attemptGetCowList();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
     public void attemptGetCowList() {
         if (getCowListTask != null) {
             return;
@@ -87,10 +113,14 @@ public class CowListFragment extends Fragment {
     }
 
     public void setIsDeletedList(boolean isDeletedList) {
-        if (this.isDeletedList != isDeletedList) {
-            this.isDeletedList = isDeletedList;
-            attemptGetCowList();
+        if (this.isDeletedList == isDeletedList)
+            return;
+
+        if (menu != null) {
+            menu.findItem(R.id.mIdeleted).setVisible(!isDeletedList);
         }
+        this.isDeletedList = isDeletedList;
+        attemptGetCowList();
     }
 
     public boolean isDeletedList() {
@@ -123,6 +153,9 @@ public class CowListFragment extends Fragment {
         @Override
         protected void responseInit(boolean isSuccessful) {
             getHolder().getCowListTask = null;
+            if (getHolder().onDataChangedListener != null) {
+                getHolder().onDataChangedListener.onDataChanged(getHolder());
+            }
         }
 
         @Override
@@ -197,5 +230,9 @@ public class CowListFragment extends Fragment {
         public interface OnCowSelectedListener {
             void onCowSelected(Cow cow, int position);
         }
+    }
+
+    public void setOnDataChangedListener(MainActivity.OnDataChangedListener onDataChangedListener) {
+        this.onDataChangedListener = onDataChangedListener;
     }
 }

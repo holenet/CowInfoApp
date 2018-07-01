@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,6 +35,8 @@ public class CalendarFragment extends Fragment {
     private MaterialCalendarView mCVrecords;
     private RecordDecorator recordDecorator;
 
+    private MainActivity.OnDataChangedListener onDataChangedListener;
+
     public static CalendarFragment newInstance() {
         CalendarFragment fragment = new CalendarFragment();
         return fragment;
@@ -40,6 +45,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         recordDecorator = new RecordDecorator();
 
@@ -81,12 +87,28 @@ public class CalendarFragment extends Fragment {
 
             @Override
             public void decorate(DayViewFacade view) {
-                view.addSpan(new ForegroundColorSpan(Color.rgb(0, 175, 20)));
+                view.addSpan(new ForegroundColorSpan(Color.rgb(0, 175, 50)));
             }
         });
         mCVrecords.addDecorator(recordDecorator);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_calendar, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.mIrefresh) {
+            attemptGetRecordList();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     public void attemptGetRecordList() {
@@ -120,6 +142,9 @@ public class CalendarFragment extends Fragment {
         @Override
         protected void responseInit(boolean isSuccessful) {
             getHolder().getRecordListTask = null;
+            if (getHolder().onDataChangedListener != null) {
+                getHolder().onDataChangedListener.onDataChanged(getHolder());
+            }
         }
 
         @Override
@@ -148,10 +173,14 @@ public class CalendarFragment extends Fragment {
 
         public void setDates(List<Record> records) {
             dates.clear();
-            for(Record record: records) {
+            for (Record record : records) {
                 int[] date = destructDate(record.day);
                 dates.add(CalendarDay.from(date[0], date[1] - 1, date[2]));
             }
         }
+    }
+
+    public void setOnDataChangedListener(MainActivity.OnDataChangedListener onDataChangedListener) {
+        this.onDataChangedListener = onDataChangedListener;
     }
 }

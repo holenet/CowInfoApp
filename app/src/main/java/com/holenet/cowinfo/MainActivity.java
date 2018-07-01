@@ -34,8 +34,21 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        OnDataChangedListener onDataChangedListener = new OnDataChangedListener() {
+            @Override
+            public void onDataChanged(Object invoker) {
+                if (invoker != cowListFragment) {
+                    cowListFragment.attemptGetCowList();
+                }
+                if (invoker != calendarFragment) {
+                    calendarFragment.attemptGetRecordList();
+                }
+            }
+        };
         cowListFragment = CowListFragment.newInstance(false);
+        cowListFragment.setOnDataChangedListener(onDataChangedListener);
         calendarFragment = CalendarFragment.newInstance();
+        calendarFragment.setOnDataChangedListener(onDataChangedListener);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
@@ -62,10 +75,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    Menu menu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -77,14 +88,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, EditCowActivity.class);
             intent.putExtra("edit_mode", EditCowActivity.MODE_CREATE);
             startActivityForResult(intent, REQUEST_CREATE_COW);
-        } else if (id == R.id.mIrefresh) {
-            if (cowListFragment != null) {
-                cowListFragment.attemptGetCowList();
-            }
         } else if (id == R.id.mIdeleted) {
-            cowListFragment.setIsDeletedList(true);
-            menu.findItem(R.id.mIdeleted).setVisible(false);
-            adapter.notifyDataSetChanged();
+            if (cowListFragment != null) {
+                cowListFragment.setIsDeletedList(true);
+                adapter.notifyDataSetChanged();
+            }
         } else if (id == R.id.mIsignOut) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.putExtra("signed_out", true);
@@ -101,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (vPmain.getCurrentItem() == 0 && cowListFragment != null && cowListFragment.isDeletedList()) {
             cowListFragment.setIsDeletedList(false);
-            menu.findItem(R.id.mIdeleted).setVisible(true);
             adapter.notifyDataSetChanged();
         } else {
             super.onBackPressed();
@@ -139,5 +146,9 @@ public class MainActivity extends AppCompatActivity {
                 default: return null;
             }
         }
+    }
+
+    interface OnDataChangedListener {
+        void onDataChanged(Object invoker);
     }
 }
