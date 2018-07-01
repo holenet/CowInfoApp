@@ -34,25 +34,25 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        OnDataChangedListener onDataChangedListener = new OnDataChangedListener() {
-            @Override
-            public void onDataChanged(Object invoker) {
-                if (invoker != cowListFragment) {
-                    cowListFragment.attemptGetCowList();
-                }
-                if (invoker != calendarFragment) {
-                    calendarFragment.attemptGetRecordList();
-                }
-            }
-        };
         cowListFragment = CowListFragment.newInstance(false);
-        cowListFragment.setOnDataChangedListener(onDataChangedListener);
         calendarFragment = CalendarFragment.newInstance();
-        calendarFragment.setOnDataChangedListener(onDataChangedListener);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
         vPmain.setAdapter(adapter);
+        vPmain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                cowListFragment.attemptGetCowList();
+                calendarFragment.attemptGetRecordList();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
 
         Intent intent = new Intent(MainActivity.this, SignInActivity.class);
         startActivityForResult(intent, REQUEST_SIGN_IN);
@@ -146,9 +146,5 @@ public class MainActivity extends AppCompatActivity {
                 default: return null;
             }
         }
-    }
-
-    interface OnDataChangedListener {
-        void onDataChanged(Object invoker);
     }
 }

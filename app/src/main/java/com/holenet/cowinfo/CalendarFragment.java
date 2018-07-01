@@ -35,8 +35,6 @@ public class CalendarFragment extends Fragment {
     private MaterialCalendarView mCVrecords;
     private RecordDecorator recordDecorator;
 
-    private MainActivity.OnDataChangedListener onDataChangedListener;
-
     public static CalendarFragment newInstance() {
         CalendarFragment fragment = new CalendarFragment();
         return fragment;
@@ -142,9 +140,6 @@ public class CalendarFragment extends Fragment {
         @Override
         protected void responseInit(boolean isSuccessful) {
             getHolder().getRecordListTask = null;
-            if (getHolder().onDataChangedListener != null) {
-                getHolder().onDataChangedListener.onDataChanged(getHolder());
-            }
         }
 
         @Override
@@ -178,9 +173,5 @@ public class CalendarFragment extends Fragment {
                 dates.add(CalendarDay.from(date[0], date[1] - 1, date[2]));
             }
         }
-    }
-
-    public void setOnDataChangedListener(MainActivity.OnDataChangedListener onDataChangedListener) {
-        this.onDataChangedListener = onDataChangedListener;
     }
 }

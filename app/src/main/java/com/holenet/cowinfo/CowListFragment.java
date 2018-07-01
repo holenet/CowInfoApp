@@ -32,8 +32,6 @@ public class CowListFragment extends Fragment {
 
     private GetCowListTask getCowListTask;
 
-    private MainActivity.OnDataChangedListener onDataChangedListener;
-
     public static CowListFragment newInstance(boolean isDeletedList) {
         CowListFragment fragment = new CowListFragment();
         Bundle args = new Bundle();
@@ -153,9 +151,6 @@ public class CowListFragment extends Fragment {
         @Override
         protected void responseInit(boolean isSuccessful) {
             getHolder().getCowListTask = null;
-            if (getHolder().onDataChangedListener != null) {
-                getHolder().onDataChangedListener.onDataChanged(getHolder());
-            }
         }
 
         @Override
@@ -230,9 +225,5 @@ public class CowListFragment extends Fragment {
         public interface OnCowSelectedListener {
             void onCowSelected(Cow cow, int position);
         }
-    }
-
-    public void setOnDataChangedListener(MainActivity.OnDataChangedListener onDataChangedListener) {
-        this.onDataChangedListener = onDataChangedListener;
     }
 }
