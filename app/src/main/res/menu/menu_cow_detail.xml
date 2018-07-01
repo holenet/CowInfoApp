@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.holenet.cowinfo.CowDetailActivity">
     <item
+        android:id="@+id/mIrefresh"
+        android:title="새로 고침"
+        android:icon="@drawable/ic_refresh_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mIdelete"
         android:title="개체 삭제"
         app:showAsAction="never" />
