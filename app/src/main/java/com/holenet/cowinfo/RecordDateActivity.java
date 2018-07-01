@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,6 +168,8 @@ public class RecordDateActivity extends AppCompatActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
+            setHasOptionsMenu(true);
+
             Bundle arguments = getArguments();
             if (arguments != null) {
                 date = arguments.getParcelable(ARG_DATE);
@@ -212,6 +215,22 @@ public class RecordDateActivity extends AppCompatActivity {
             }
 
             adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.menu_record_date, menu);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            final int id = item.getItemId();
+            if (id == R.id.mIrefresh) {
+                attemptGetRecords();
+            } else {
+                return super.onOptionsItemSelected(item);
+            }
+            return true;
         }
 
         @Override
