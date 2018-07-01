@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager vPmain;
 
     private CowListFragment cowListFragment;
-//    private CalendarFragment calendarFragment;
+    private CalendarFragment calendarFragment;
     private PagerAdapter adapter;
 
     private User user;
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         cowListFragment = CowListFragment.newInstance(false);
+        calendarFragment = CalendarFragment.newInstance();
 
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (cowListFragment != null && cowListFragment.isDeletedList()) {
+        if (vPmain.getCurrentItem() == 0 && cowListFragment != null && cowListFragment.isDeletedList()) {
             cowListFragment.setIsDeletedList(false);
             menu.findItem(R.id.mIdeleted).setVisible(true);
             adapter.notifyDataSetChanged();
@@ -116,15 +117,14 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch(position) {
                 case 0: return cowListFragment;
-//                case 1: return calendarFragment;
+                case 1: return calendarFragment;
                 default: return null;
             }
         }
 
         @Override
         public int getCount() {
-//            return 2;
-            return 1;
+            return 2;
         }
 
         @Nullable
