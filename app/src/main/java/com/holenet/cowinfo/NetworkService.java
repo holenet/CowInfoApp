@@ -123,6 +123,12 @@ public class NetworkService {
         return request(call, "updateRecord");
     }
 
+    public static Result<Void> destroyRecord(int recordId) {
+        init();
+        Call<Void> call = api.destroyRecord(authenticationToken, recordId);
+        return request(call, "destroyRecord");
+    }
+
     public interface API {
         String BASE_URL = "http://13.125.31.214";
         String USERS_URL = BASE_URL + "/users/";
@@ -155,6 +161,9 @@ public class NetworkService {
 
         @PATCH(RECORDS_URL+"{id}/")
         Call<Record> updateRecord(@Header("Authorization") String authorization, @Path("id") int id, @Body Record record);
+
+        @DELETE(RECORDS_URL+"{id}/")
+        Call<Void> destroyRecord(@Header("Authorization") String authorization, @Path("id") int id);
     }
 
     public static class Result<T> {

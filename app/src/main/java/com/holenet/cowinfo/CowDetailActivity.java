@@ -88,8 +88,6 @@ public class CowDetailActivity extends AppCompatActivity {
     }
 
     private void attemptDestroyCow(Cow cow) {
-        cow = cow.copy();
-        cow.deleted = true;
         DestroyCowTask task = new DestroyCowTask(this);
         task.execute(cow.id);
     }
@@ -250,6 +248,11 @@ public class CowDetailActivity extends AppCompatActivity {
             getCowTask.execute(cow.id);
         }
 
+        private void attemptDestroyRecord(Record record) {
+            DestroyRecordTask task = new DestroyRecordTask(this);
+            task.execute(record.id);
+        }
+
         private void updateInfo(Cow cow) {
             this.cow = cow;
             if (onCowUpdatedListener != null) {
@@ -279,7 +282,17 @@ public class CowDetailActivity extends AppCompatActivity {
                 intent.putExtra("record", record);
                 startActivityForResult(intent, REQUEST_UPDATE_RECORD);
             } else if (itemId == MENU_DELETE_RECORD) {
-                // TODO: show confirmation dialog and request delete record
+                new AlertDialog.Builder(this.getContext())
+                        .setTitle(cow.number)
+                        .setMessage(String.format("%s\n%s\n\n삭제하시겠습니까?", record.getKoreanDay(), record.content, record.etc))
+                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                attemptDestroyRecord(record);
+                            }
+                        })
+                        .setNegativeButton("아니오", null)
+                        .show();
             } else {
                 return false;
             }
@@ -385,6 +398,32 @@ public class CowDetailActivity extends AppCompatActivity {
             @Override
             protected void responseFail(Map<String, String> errors) {
                 existErrors(errors, getHolder().getContext());
+            }
+        }
+
+        private static class DestroyRecordTask extends NetworkService.Task<CowDetailFragment, Integer, Void> {
+            public DestroyRecordTask(CowDetailFragment holder) {
+                super(holder);
+            }
+
+            @Override
+            protected NetworkService.Result<Void> request(Integer recordId) {
+                return NetworkService.destroyRecord(recordId);
+            }
+
+            @Override
+            protected void responseInit(boolean isSuccessful) {}
+
+            @Override
+            protected void responseSuccess(Void aVoid) {
+                getHolder().attemptGetCow();
+            }
+
+            @Override
+            protected void responseFail(Map<String, String> errors) {
+                if (existErrors(errors, getHolder().getContext())) {
+                    Toast.makeText(getHolder().getContext(), "삭제에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
