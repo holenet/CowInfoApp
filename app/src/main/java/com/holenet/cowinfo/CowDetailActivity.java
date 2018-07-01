@@ -46,6 +46,13 @@ public class CowDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         cows = (List<Cow>) intent.getSerializableExtra("cow_list");
+        if (cows == null) {
+            int cowId = intent.getIntExtra("cow_id", -1);
+            if (cowId == -1)
+                finish();
+            cows = new ArrayList<>();
+            cows.add(new Cow(cowId));
+        }
         int initPosition = intent.getIntExtra("position", 0);
 
         adapter = new PagerAdapter(getSupportFragmentManager());
@@ -187,12 +194,11 @@ public class CowDetailActivity extends AppCompatActivity {
 
         private OnCowUpdatedListener onCowUpdatedListener;
 
-        public static CowDetailFragment newInstance(Cow cow, OnCowUpdatedListener onCowUpdatedListener) {
+        public static CowDetailFragment newInstance(Cow cow) {
             CowDetailFragment fragment = new CowDetailFragment();
             Bundle args = new Bundle();
             args.putSerializable(ARG_COW, cow);
             fragment.setArguments(args);
-            fragment.onCowUpdatedListener = onCowUpdatedListener;
             return fragment;
         }
 
@@ -234,7 +240,12 @@ public class CowDetailActivity extends AppCompatActivity {
                 }
             });
 
-            updateInfo(cow);
+            if (cow.number == null) {
+                this.cow = cow;
+                attemptGetCow();
+            } else {
+                updateInfo(cow);
+            }
 
             return view;
         }
@@ -284,7 +295,7 @@ public class CowDetailActivity extends AppCompatActivity {
             } else if (itemId == MENU_DELETE_RECORD) {
                 new AlertDialog.Builder(this.getContext())
                         .setTitle(cow.number)
-                        .setMessage(String.format("%s\n%s\n\n삭제하시겠습니까?", record.getKoreanDay(), record.content, record.etc))
+                        .setMessage(String.format("%s\n%s\n%s\n삭제하시겠습니까?", record.getKoreanDay(), record.content, record.etc))
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -430,6 +441,10 @@ public class CowDetailActivity extends AppCompatActivity {
         public interface OnCowUpdatedListener {
             void onCowUpdated(Cow cow);
         }
+
+        public void setOnCowUpdatedListener(OnCowUpdatedListener onCowUpdatedListener) {
+            this.onCowUpdatedListener = onCowUpdatedListener;
+        }
     }
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -439,13 +454,15 @@ public class CowDetailActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(final int position) {
-            return CowDetailFragment.newInstance(cows.get(position), new CowDetailFragment.OnCowUpdatedListener() {
+            CowDetailFragment fragment = CowDetailFragment.newInstance(cows.get(position));
+            fragment.setOnCowUpdatedListener(new CowDetailFragment.OnCowUpdatedListener() {
                 @Override
                 public void onCowUpdated(Cow cow) {
                     cows.set(position, cow);
                     notifyDataSetChanged();
                 }
             });
+            return fragment;
         }
 
         @Override

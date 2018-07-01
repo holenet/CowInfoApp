@@ -1,7 +1,9 @@
 package com.holenet.cowinfo;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.style.ForegroundColorSpan;
@@ -17,6 +19,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.util.ArrayList;
@@ -25,15 +28,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 import static com.holenet.cowinfo.NetworkService.destructDate;
 
 public class CalendarFragment extends Fragment {
+    public static final int REQUEST_RECORD_DATE = 601;
+
     private List<Record> records = new ArrayList<>();
+    private HashSet<CalendarDay> dateSet = new HashSet<>();
 
     private GetRecordListTask getRecordListTask;
 
     private MaterialCalendarView mCVrecords;
-    private RecordDecorator recordDecorator;
+    private DayViewDecorator recordDecorator;
 
     public static CalendarFragment newInstance() {
         CalendarFragment fragment = new CalendarFragment();
@@ -45,7 +52,17 @@ public class CalendarFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        recordDecorator = new RecordDecorator();
+        recordDecorator = new DayViewDecorator() {
+            @Override
+            public boolean shouldDecorate(CalendarDay day) {
+                return dateSet.contains(day);
+            }
+
+            @Override
+            public void decorate(DayViewFacade view) {
+                view.addSpan(new DotSpan(10, Color.MAGENTA));
+            }
+        };
 
         attemptGetRecordList();
     }
@@ -89,6 +106,19 @@ public class CalendarFragment extends Fragment {
             }
         });
         mCVrecords.addDecorator(recordDecorator);
+        mCVrecords.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                if (!dateSet.contains(date)) {
+                    mCVrecords.clearSelection();
+                    return;
+                }
+                Intent intent = new Intent(getContext(), RecordDateActivity.class);
+                intent.putExtra("record_list", (ArrayList<Record>) records);
+                intent.putExtra("date", date);
+                startActivityForResult(intent, REQUEST_RECORD_DATE);
+            }
+        });
 
         return view;
     }
@@ -122,9 +152,27 @@ public class CalendarFragment extends Fragment {
         this.records.clear();
         this.records.addAll(records);
 
-        recordDecorator.setDates(this.records);
+        dateSet.clear();
+        for (Record record : records) {
+            int[] date = destructDate(record.day);
+            dateSet.add(CalendarDay.from(date[0], date[1] - 1, date[2]));
+        }
+
         if (mCVrecords != null)
             mCVrecords.invalidateDecorators();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_RECORD_DATE) {
+            attemptGetRecordList();
+            if (resultCode == RESULT_OK) {
+                CalendarDay date = data.getParcelableExtra("date");
+                mCVrecords.setSelectedDate(date);
+                mCVrecords.setCurrentDate(date);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private static class GetRecordListTask extends NetworkService.Task<CalendarFragment, Void, List<Record>> {
@@ -150,28 +198,6 @@ public class CalendarFragment extends Fragment {
         @Override
         protected void responseFail(Map<String, String> errors) {
             existErrors(errors, getHolder().getContext());
-        }
-    }
-
-    private static class RecordDecorator implements DayViewDecorator {
-        private HashSet<CalendarDay> dates = new HashSet<>();
-
-        @Override
-        public boolean shouldDecorate(CalendarDay day) {
-            return dates.contains(day);
-        }
-
-        @Override
-        public void decorate(DayViewFacade view) {
-            view.addSpan(new DotSpan(10, Color.MAGENTA));
-        }
-
-        public void setDates(List<Record> records) {
-            dates.clear();
-            for (Record record : records) {
-                int[] date = destructDate(record.day);
-                dates.add(CalendarDay.from(date[0], date[1] - 1, date[2]));
-            }
         }
     }
 }

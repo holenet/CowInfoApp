@@ -8,11 +8,16 @@ public class Cow implements Serializable {
     public Integer id;
     public ArrayList<Record> records;
     public String created;
-    public Boolean deleted;
+    public Boolean deleted = false;
     public String sex;
     public String number;
     public String mother_number;
     public String birthday;
+
+    public Cow(Integer id) {
+        this.id = id;
+        records = new ArrayList<>();
+    }
 
     public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, String birthday) {
         this.id = id;
@@ -55,6 +60,7 @@ public class Cow implements Serializable {
     }
 
     public String getSummary() {
+        if (number == null || sex == null) return null;
         char sexSymbol = sex.equals("female") ? '♀' : '♂';
         return number.split("-")[2] + " " + sexSymbol;
     }

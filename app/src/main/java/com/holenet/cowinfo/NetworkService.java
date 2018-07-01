@@ -117,6 +117,12 @@ public class NetworkService {
         return request(call, "getRecordList");
     }
 
+    public static Result<List<Record>> getRecordList(boolean cowDeleted, String day) {
+        init();
+        Call<List<Record>> call = api.getRecordList(authenticationToken, stringify(cowDeleted), day);
+        return request(call, "getRecordList");
+    }
+
     public static Result<Record> createRecord(Record record) {
         init();
         Call<Record> call = api.createRecord(authenticationToken, record);
@@ -164,6 +170,9 @@ public class NetworkService {
 
         @GET(RECORDS_URL)
         Call<List<Record>> getRecordList(@Header("Authorization") String authorization, @Query("cow__deleted") String cowDeleted);
+
+        @GET(RECORDS_URL)
+        Call<List<Record>> getRecordList(@Header("Authorization") String authorization, @Query("cow__deleted") String cowDeleted, @Query("day") String day);
 
         @POST(RECORDS_URL)
         Call<Record> createRecord(@Header("Authorization") String authorization, @Body Record record);

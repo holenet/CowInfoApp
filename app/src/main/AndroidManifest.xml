@@ -33,6 +33,9 @@
         <activity
             android:name=".EditRecordActivity"
             android:label="이력 정보 수정" />
+        <activity
+            android:name=".RecordDateActivity"
+            android:label="날짜별 이력 목록" />
     </application>
 
 </manifest>

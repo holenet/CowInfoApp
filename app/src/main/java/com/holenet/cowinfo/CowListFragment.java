@@ -54,7 +54,6 @@ public class CowListFragment extends Fragment {
         adapter = new CowRecyclerAdapter(cows, new CowRecyclerAdapter.OnCowSelectedListener() {
             @Override
             public void onCowSelected(Cow cow, int position) {
-                Log.e("onCowSelected", position+": "+cow.toString());
                 Intent intent = new Intent(CowListFragment.this.getContext(), CowDetailActivity.class);
                 intent.putExtra("cow_list", (ArrayList<Cow>)cows);
                 intent.putExtra("position", position);
@@ -131,11 +130,6 @@ public class CowListFragment extends Fragment {
             attemptGetCowList();
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     private static class GetCowListTask extends NetworkService.Task<CowListFragment, Boolean, List<Cow>> {
