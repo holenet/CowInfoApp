@@ -176,7 +176,7 @@ public class CowDetailActivity extends AppCompatActivity {
         }
 
         private void onSuccessDeleteCow() {
-            Toast.makeText(getContext(), "삭제된 개체는 휴지통 메뉴에서 복원 할 수 있습니다.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "삭제된 개체는 '삭제된 개체' 메뉴에서 복원 할 수 있습니다.", Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
 

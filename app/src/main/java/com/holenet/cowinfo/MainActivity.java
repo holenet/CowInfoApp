@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.holenet.cowinfo.item.Cow;
 import com.holenet.cowinfo.item.User;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 cowListFragment.setIsDeletedList(true);
                 adapter.notifyDataSetChanged();
             }
+            Toast.makeText(this, "돌아가려면 뒤로 버튼을 눌러주세요.", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.mIsignOut) {
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             intent.putExtra("signed_out", true);
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             switch(position) {
                 case 0:
                     if (cowListFragment != null && cowListFragment.isDeletedList())
-                        return "휴지통 개체 목록";
+                        return "삭제된 개체 목록";
                     return "개체 목록";
                 case 1: return "달력";
                 default: return null;

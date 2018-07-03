@@ -15,6 +15,6 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mIdeleted"
-        android:title="휴지통"
+        android:title="삭제된 개체"
         app:showAsAction="never" />
 </menu>
