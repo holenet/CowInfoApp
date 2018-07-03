@@ -80,6 +80,7 @@ public class EditRecordActivity extends AppCompatActivity {
 
     private SaveRecordTaskInfo saveRecordTaskInfo;
 
+    private TextView tVcow;
     private Spinner sPcontent;
     private EditText eTetc;
     private TextView tVday;
@@ -99,6 +100,7 @@ public class EditRecordActivity extends AppCompatActivity {
 
         setResult(RESULT_CANCELED);
 
+        tVcow = findViewById(R.id.tVcow);
         sPcontent = findViewById(R.id.sPcontent);
         eTetc = findViewById(R.id.eTetc);
         tVday = findViewById(R.id.tVday);
@@ -167,9 +169,13 @@ public class EditRecordActivity extends AppCompatActivity {
         int edit_mode = intent.getIntExtra("edit_mode", 0);
         if (edit_mode == MODE_CREATE) {
             getSupportActionBar().setTitle("새로운 이력 추가");
+
+            tVcow.setText(intent.getStringExtra("cow_summary"));
         } else if (edit_mode == MODE_UPDATE) {
             getSupportActionBar().setTitle("이력 정보 수정");
             record = (Record) intent.getSerializableExtra("record");
+
+            tVcow.setText(record.cow_summary);
 
             sPcontent.setSelection(Arrays.asList(contents).indexOf(record.content));
 

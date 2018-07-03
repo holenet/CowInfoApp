@@ -127,6 +127,7 @@ public class CowDetailActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(CowDetailFragment.this.getContext(), EditRecordActivity.class);
                     intent.putExtra("cow_id", CowDetailFragment.this.cow.id);
+                    intent.putExtra("cow_summary", CowDetailFragment.this.cow.summary);
                     intent.putExtra("edit_mode", EditRecordActivity.MODE_CREATE);
                     startActivityForResult(intent, REQUEST_CREATE_RECORD);
                 }
