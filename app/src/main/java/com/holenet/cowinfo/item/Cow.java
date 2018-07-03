@@ -13,13 +13,14 @@ public class Cow implements Serializable {
     public String number;
     public String mother_number;
     public String birthday;
+    public String summary;
 
     public Cow(Integer id) {
         this.id = id;
         records = new ArrayList<>();
     }
 
-    public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, String birthday) {
+    public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, String birthday, String summary) {
         this.id = id;
         this.records = records;
         this.created = created;
@@ -28,6 +29,7 @@ public class Cow implements Serializable {
         this.number = number;
         this.mother_number = mother_number;
         this.birthday = birthday;
+        this.summary = summary;
     }
 
     public Cow(String sex, String number, String mother_number, String birthday) {
@@ -59,14 +61,8 @@ public class Cow implements Serializable {
         return String.format(Locale.KOREA, "%d년 %d월 %d일", year, month, day);
     }
 
-    public String getSummary() {
-        if (number == null || sex == null) return null;
-        char sexSymbol = sex.equals("female") ? '♀' : '♂';
-        return number.split("-")[2] + " " + sexSymbol;
-    }
-
     public Cow copy() {
-        return new Cow(id, records, created, deleted, sex, number, mother_number, birthday);
+        return new Cow(id, records, created, deleted, sex, number, mother_number, birthday, summary);
     }
 
     @Override

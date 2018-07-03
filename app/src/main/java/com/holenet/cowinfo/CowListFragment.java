@@ -177,7 +177,7 @@ public class CowListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             final Cow cow = cows.get(position);
-            holder.tVsummary.setText(cow.getSummary());
+            holder.tVsummary.setText(cow.summary);
             holder.tVcount.setText("이력 "+String.valueOf(cow.records.size()));
             holder.tVnumber.setText(cow.number);
             if (cow.birthday != null) {

@@ -10,6 +10,8 @@ public class Record implements Serializable {
     public String etc;
     public String day;
     public Integer cow;
+    public String cow_summary;
+    public String cow_number;
 
     public Record(Record record, String content, String etc, String day, Integer cow) {
         this.id = record.id;
@@ -18,6 +20,8 @@ public class Record implements Serializable {
         this.etc = etc;
         this.day = day;
         this.cow = cow;
+        this.cow_summary = record.cow_summary;
+        this.cow_number = record.cow_number;
     }
 
     public Record(String content, String etc, String day, Integer cow) {

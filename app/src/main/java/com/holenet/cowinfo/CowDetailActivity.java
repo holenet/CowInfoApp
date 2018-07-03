@@ -511,7 +511,7 @@ public class CowDetailActivity extends AppCompatActivity {
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            return cows.get(position).getSummary();
+            return cows.get(position).summary;
         }
     }
 }

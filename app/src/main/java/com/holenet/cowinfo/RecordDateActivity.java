@@ -250,8 +250,7 @@ public class RecordDateActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_UPDATE_RECORD);
             } else if (itemId == MENU_DELETE_RECORD) {
                 new AlertDialog.Builder(this.getContext())
-                        // TODO: setTitle to cow_number instead of cow_id
-                        .setTitle(String.valueOf(record.cow))
+                        .setTitle(record.cow_number)
                         .setMessage(String.format("%s\n%s\n%s\n삭제하시겠습니까?", record.getKoreanDay(), record.content, record.etc))
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             @Override
@@ -305,8 +304,7 @@ public class RecordDateActivity extends AppCompatActivity {
                 final Record record = records.get(position);
                 holder.tVcontent.setText(record.content);
                 holder.tVetc.setText(record.etc);
-                // TODO: setText cow_number instead of cow(_id)
-                holder.tVcow.setText(String.valueOf(record.cow));
+                holder.tVcow.setText(record.cow_summary);
             }
 
             public Record getItem(int index) {
