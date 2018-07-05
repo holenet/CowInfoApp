@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.holenet.cowinfo.MainActivity">
     <item
+        android:id="@+id/mInoticeSettings"
+        android:title="알림 설정"
+        android:orderInCategory="9999"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mIsignOut"
         android:title="로그아웃"
         android:orderInCategory="9999"

@@ -3,6 +3,7 @@
     package="com.holenet.cowinfo">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -36,6 +37,19 @@
         <activity
             android:name=".RecordDateActivity"
             android:label="날짜별 이력 목록" />
+
+        <receiver
+            android:name=".notice.AlarmReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.holenet.cowinfo.notice.action.CHECK" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".notice.NoticeService"
+            android:exported="false" />
     </application>
 
 </manifest>

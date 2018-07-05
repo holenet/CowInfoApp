@@ -1,13 +1,15 @@
 <resources>
     <string name="app_name">한우이력정보</string>
-    <string name="action_settings">Settings</string>
+
     <string name="pref_key_auto_sign_in">auto_sign_in</string>
     <string name="pref_key_save_username">save_username</string>
     <string name="pref_key_save_password">save_password</string>
     <string name="pref_key_username">username</string>
     <string name="pref_key_password">password</string>
-    <string name="title_activity_cow_detail">CowDetailActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="pref_key_notice_enable">notice_enable</string>
+    <string name="pref_key_notice_hour_of_day">notice_hour_of_day</string>
+    <string name="pref_key_notice_minute">notice_minute</string>
 
     <string-array name="week_day_labels">
         <item>일</item>

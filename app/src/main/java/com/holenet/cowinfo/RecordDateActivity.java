@@ -199,7 +199,7 @@ public class RecordDateActivity extends AppCompatActivity {
             }
 
             getRecordsTask = new GetRecordsTask(this);
-            getRecordsTask.execute(String.format(Locale.KOREA, "%d-%d-%d",  date.getYear(), date.getMonth() + 1, date.getDay()));
+            getRecordsTask.execute(NetworkService.constructDate(date.getYear(), date.getMonth() + 1, date.getDay()));
         }
 
         private void attemptDestroyRecord(Record record) {
