@@ -46,9 +46,7 @@ public class NoticeManager {
         }
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
-//        For debug
-        getAlarmManager(context).setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES/15, pendingIntent);
-//        getAlarmManager(context).setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        getAlarmManager(context).setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         setPreference(context, true, hourOfDay, minute);
     }
 
