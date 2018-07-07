@@ -2,20 +2,28 @@ package com.holenet.cowinfo.notice;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 
+import com.holenet.cowinfo.MainActivity;
 import com.holenet.cowinfo.NetworkService;
 import com.holenet.cowinfo.R;
+import com.holenet.cowinfo.RecordDateActivity;
 import com.holenet.cowinfo.item.Record;
 import com.holenet.cowinfo.item.User;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.holenet.cowinfo.NetworkService.destructDate;
 
 public class NoticeService extends IntentService {
     private static final String ACTION_NOTIFY = "com.holenet.cowinfo.notice.action.NOTIFY";
@@ -71,16 +79,39 @@ public class NoticeService extends IntentService {
             for (Record record : records) {
                 cows.add(record.cow_number);
             }
-            notifyWithContent(TextUtils.join(", ", cows));
+
+            int[] days = destructDate(date);
+            notifyWithContent(TextUtils.join(", ", cows), (ArrayList<Record>) records, CalendarDay.from(days[0], days[1] - 1, days[2]));
         }
     }
 
     private void notifyWithContent(String content) {
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notice")
+        notifyWithContent(content, null, null);
+    }
+
+    private void notifyWithContent(String content, ArrayList<Record> records, CalendarDay date) {
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("position", 1);
+        stackBuilder.addNextIntent(intent);
+
+        if (records != null) {
+            intent = new Intent(this, RecordDateActivity.class);
+            intent.putExtra("record_list", records);
+            intent.putExtra("date", date);
+            stackBuilder.addNextIntent(intent);
+        }
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "notice")
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setContentTitle(getApplicationContext().getString(R.string.app_name))
                 .setContentText(content)
 //                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

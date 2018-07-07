@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new PagerAdapter(getSupportFragmentManager());
         vPmain = findViewById(R.id.vPmain);
         vPmain.setAdapter(adapter);
+        vPmain.setCurrentItem(getIntent().getIntExtra("position", 0));
         vPmain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
