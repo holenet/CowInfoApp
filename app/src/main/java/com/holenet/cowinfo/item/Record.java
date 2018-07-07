@@ -38,4 +38,9 @@ public class Record implements Serializable {
         int day = Integer.parseInt(days[2]);
         return String.format(Locale.KOREA, "%d년 %d월 %d일", year, month, day);
     }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.getDefault(), "%s %s %s", cow_summary, content, etc);
+    }
 }
