@@ -77,7 +77,7 @@ public class NetworkService {
     }
 
     private static void setAuthToken(String authToken) {
-        interceptor.setAuthToken(authToken);
+        interceptor.setAuthToken("Token " + authToken);
     }
 
     private static <T> Result<T> request(Call<T> call, String tag) {
@@ -96,7 +96,7 @@ public class NetworkService {
         Call<User> call = api.signIn(user);
         Result<User> result = request(call, "signIn");
         if (result != null && result.isSuccessful()) {
-            setAuthToken("Token " + result.result.auth_token);
+            setAuthToken(result.result.auth_token);
         }
         return result;
     }
@@ -106,7 +106,7 @@ public class NetworkService {
         Call<User> call = api.signUp(user);
         Result<User> result = request(call, "signUp");
         if (result != null && result.isSuccessful()) {
-            setAuthToken("Token " + result.result.auth_token);
+            setAuthToken(result.result.auth_token);
         }
         return result;
     }
