@@ -142,7 +142,8 @@ public class NetworkService {
     }
 
     public interface API {
-        String BASE_URL = "http://13.125.31.214";
+//        String BASE_URL = "http://13.125.31.214";
+        String BASE_URL = "http://10.0.2.2:8000";   // development environment
         String USERS_URL = BASE_URL + "/users/";
         String COWS_URL = BASE_URL + "/cows/";
         String RECORDS_URL = BASE_URL + "/records/";
