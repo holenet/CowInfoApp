@@ -3,7 +3,6 @@ package com.holenet.cowinfo;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -39,11 +38,7 @@ import retrofit2.http.Query;
 
 public class NetworkService {
     private static API api;
-    private static String authenticationToken;
-
-    private static String authenticator(User user) {
-        return "basic "+ Base64.encodeToString((user.username + ":" +user.password).getBytes(), Base64.NO_WRAP);
-    }
+    private static String authToken;
 
     private static void init() {
         if (api == null) {
@@ -69,75 +64,81 @@ public class NetworkService {
 
     public static Result<User> signIn(User user) {
         init();
-        authenticationToken = authenticator(user);
-        Call<User> call = api.signIn(authenticationToken);
-        return request(call, "signIn");
+        Call<User> call = api.signIn(user);
+        Result<User> result = request(call, "signIn");
+        if (result != null && result.isSuccessful()) {
+            authToken = "Token " + result.result.auth_token;
+        }
+        return result;
     }
 
     public static Result<User> signUp(User user) {
         init();
-        authenticationToken = authenticator(user);
         Call<User> call = api.signUp(user);
-        return request(call, "signUp");
+        Result<User> result = request(call, "signUp");
+        if (result != null && result.isSuccessful()) {
+            authToken = "Token " + result.result.auth_token;
+        }
+        return result;
     }
 
     public static Result<List<Cow>> getCowList(boolean deleted) {
         init();
-        Call<List<Cow>> call = api.getCowList(authenticationToken, stringify(deleted));
+        Call<List<Cow>> call = api.getCowList(authToken, stringify(deleted));
         return request(call, "getCowList");
     }
 
     public static Result<Cow> getCow(int cowId) {
         init();
-        Call<Cow> call = api.getCow(authenticationToken, cowId);
+        Call<Cow> call = api.getCow(authToken, cowId);
         return request(call, "getCow");
     }
 
     public static Result<Cow> createCow(Cow cow) {
         init();
-        Call<Cow> call = api.createCow(authenticationToken, cow);
+        Call<Cow> call = api.createCow(authToken, cow);
         return request(call, "createCow");
     }
 
     public static Result<Cow> updateCow(Cow cow) {
         init();
-        Call<Cow> call = api.updateCow(authenticationToken, cow.id, cow);
+        Call<Cow> call = api.updateCow(authToken, cow.id, cow);
         return request(call, "updateCow");
     }
 
     public static Result<Void> destroyCow(int cowId) {
         init();
-        Call<Void> call = api.destroyCow(authenticationToken, cowId);
+        Call<Void> call = api.destroyCow(authToken, cowId);
         return request(call, "destroyCow");
     }
 
     public static Result<List<Record>> getRecordList(boolean cowDeleted) {
         init();
-        Call<List<Record>> call = api.getRecordList(authenticationToken, stringify(cowDeleted));
+        Call<List<Record>> call = api.getRecordList(authToken, stringify(cowDeleted));
         return request(call, "getRecordList");
     }
 
     public static Result<List<Record>> getRecordList(boolean cowDeleted, String day) {
         init();
-        Call<List<Record>> call = api.getRecordList(authenticationToken, stringify(cowDeleted), day);
+        Call<List<Record>> call = api.getRecordList(authToken, stringify(cowDeleted), day);
         return request(call, "getRecordList");
     }
 
     public static Result<Record> createRecord(Record record) {
         init();
-        Call<Record> call = api.createRecord(authenticationToken, record);
+        Call<Record> call = api.createRecord(authToken, record);
         return request(call, "createRecord");
     }
 
     public static Result<Record> updateRecord(Record record) {
         init();
-        Call<Record> call = api.updateRecord(authenticationToken, record.id, record);
+        Call<Record> call = api.updateRecord(authToken, record.id, record);
         return request(call, "updateRecord");
     }
 
     public static Result<Void> destroyRecord(int recordId) {
         init();
-        Call<Void> call = api.destroyRecord(authenticationToken, recordId);
+        Call<Void> call = api.destroyRecord(authToken, recordId);
         return request(call, "destroyRecord");
     }
 
@@ -148,8 +149,8 @@ public class NetworkService {
         String COWS_URL = BASE_URL + "/cows/";
         String RECORDS_URL = BASE_URL + "/records/";
 
-        @GET(USERS_URL + "my/")
-        Call<User> signIn(@Header("Authorization") String authorization);
+        @POST(USERS_URL + "auth-token/")
+        Call<User> signIn(@Body User user);
 
         @POST(USERS_URL + "new/")
         Call<User> signUp(@Body User user);
