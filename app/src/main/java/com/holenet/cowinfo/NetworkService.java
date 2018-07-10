@@ -46,12 +46,13 @@ public class NetworkService {
             .addConverterFactory(GsonConverterFactory.create(
                     new GsonBuilder().serializeNulls().create())
             );
+    private static AuthenticationInterceptor interceptor;
     private static API api;
 
     private static class AuthenticationInterceptor implements Interceptor {
-        private String authToken;
+        private String authToken = "";
 
-        AuthenticationInterceptor(String authToken) {
+        public void setAuthToken(String authToken) {
             this.authToken = authToken;
         }
 
@@ -66,17 +67,17 @@ public class NetworkService {
 
     private static void init() {
         if (api == null) {
+            interceptor = new AuthenticationInterceptor();
+            if (!httpClient.interceptors().contains(interceptor)) {
+                httpClient.addInterceptor(interceptor);
+                builder.client(httpClient.build());
+            }
             api = builder.build().create(API.class);
         }
     }
 
     private static void setAuthToken(String authToken) {
-        AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
-        if (!httpClient.interceptors().contains(interceptor)) {
-            httpClient.addInterceptor(interceptor);
-            builder.client(httpClient.build());
-            api = builder.build().create(API.class);
-        }
+        interceptor.setAuthToken(authToken);
     }
 
     private static <T> Result<T> request(Call<T> call, String tag) {
