@@ -114,9 +114,21 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iBviewMother"
             app:layout_constraintTop_toTopOf="@+id/textView5"
             tools:text="002-1232-1411-1" />
+
+        <ImageButton
+            android:id="@+id/iBviewMother"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="#0000"
+            android:src="@drawable/ic_open_in_new_black_24dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tVmotherNumber"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tVmotherNumber" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView

@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class CowDetailActivity extends AppCompatActivity {
         public static final int REQUEST_UPDATE_COW = 400;
         public static final int REQUEST_CREATE_RECORD = 401;
         public static final int REQUEST_UPDATE_RECORD = 402;
+        public static final int REQUEST_MOTHER_COW_DETAIL = 403;
         public static final int MENU_UPDATE_RECORD = 300;
         public static final int MENU_DELETE_RECORD = 301;
 
@@ -74,6 +76,7 @@ public class CowDetailActivity extends AppCompatActivity {
         private RecordRecyclerAdapter adapter;
 
         private TextView tVnumber, tVmotherNumber, tVbirthday;
+        private ImageButton iBviewMother;
 
         private GetCowTask getCowTask;
 
@@ -99,11 +102,12 @@ public class CowDetailActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_cow_detail, container, false);
             Context context = view.getContext();
 
-            Cow cow = (Cow) getArguments().getSerializable(ARG_COW);
+            final Cow cow = (Cow) getArguments().getSerializable(ARG_COW);
 
             tVnumber = view.findViewById(R.id.tVnumber);
             tVmotherNumber = view.findViewById(R.id.tVmotherNumber);
             tVbirthday = view.findViewById(R.id.tVbirthday);
+            iBviewMother = view.findViewById(R.id.iBviewMother);
 
             adapter = new RecordRecyclerAdapter(cow.id, new ArrayList<Record>());
             RecyclerView rVrecordList = view.findViewById(R.id.rVrecordList);
@@ -191,7 +195,7 @@ public class CowDetailActivity extends AppCompatActivity {
             getActivity().finish();
         }
 
-        private void updateInfo(Cow cow) {
+        private void updateInfo(final Cow cow) {
             this.cow = cow;
             if (onCowUpdatedListener != null) {
                 onCowUpdatedListener.onCowUpdated(cow);
@@ -200,6 +204,21 @@ public class CowDetailActivity extends AppCompatActivity {
             tVnumber.setText(cow.number);
             tVmotherNumber.setText(cow.mother_number);
             tVbirthday.setText(cow.getKoreanBirthday());
+
+            if (cow.mother_id != null) {
+                iBviewMother.setVisibility(View.VISIBLE);
+                iBviewMother.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), CowDetailActivity.class);
+                        intent.putExtra("cow_id", cow.mother_id);
+                        startActivityForResult(intent, REQUEST_MOTHER_COW_DETAIL);
+                    }
+                });
+            } else {
+                iBviewMother.setVisibility(View.GONE);
+                iBviewMother.setOnClickListener(null);
+            }
 
             adapter.setItems(cow.records);
         }
@@ -301,6 +320,8 @@ public class CowDetailActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     attemptGetCow();
                 }
+            } if (requestCode == REQUEST_MOTHER_COW_DETAIL) {
+                attemptGetCow();
             }
             super.onActivityResult(requestCode, resultCode, data);
         }

@@ -12,6 +12,7 @@ public class Cow implements Serializable {
     public String sex;
     public String number;
     public String mother_number;
+    public Integer mother_id;
     public String birthday;
     public String summary;
 
@@ -20,7 +21,7 @@ public class Cow implements Serializable {
         records = new ArrayList<>();
     }
 
-    public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, String birthday, String summary) {
+    public Cow(Integer id, ArrayList<Record> records, String created, Boolean deleted, String sex, String number, String mother_number, Integer mother_id, String birthday, String summary) {
         this.id = id;
         this.records = records;
         this.created = created;
@@ -28,6 +29,7 @@ public class Cow implements Serializable {
         this.sex = sex;
         this.number = number;
         this.mother_number = mother_number;
+        this.mother_id = mother_id;
         this.birthday = birthday;
         this.summary = summary;
     }
@@ -62,7 +64,7 @@ public class Cow implements Serializable {
     }
 
     public Cow copy() {
-        return new Cow(id, records, created, deleted, sex, number, mother_number, birthday, summary);
+        return new Cow(id, records, created, deleted, sex, number, mother_number, mother_id, birthday, summary);
     }
 
     @Override
