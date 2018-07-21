@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             final ConstraintLayout layout = (ConstraintLayout) (((LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE)).inflate(R.layout.dialog_notice_settings, null));
             final ConstraintLayout cLadditional = layout.findViewById(R.id.cLadditional);
             final Switch sTnotice = layout.findViewById(R.id.sTnotice);
+            final Switch sTbeforeADay = layout.findViewById(R.id.sTbeforeADay);
             final TextView tVtime = layout.findViewById(R.id.tVtime);
             final Button bTeditTime = layout.findViewById(R.id.bTeditTime);
 
@@ -145,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
             });
             sTnotice.setChecked(enable);
             cLadditional.setVisibility(enable ? View.VISIBLE : View.GONE);
+
+            sTbeforeADay.setChecked(pref.getBoolean(getString(R.string.pref_key_notice_before_a_day), false));
 
             tVtime.setText(String.format(Locale.KOREA, "%s %d시 %d분", time[0] < 12 ? "오전" : "오후", (time[0] + 11) % 12 + 1, time[1]));
 
@@ -173,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                             boolean newEnable = sTnotice.isChecked();
                             NoticeManager.disableNotice(MainActivity.this);
                             if (newEnable) {
-                                NoticeManager.enableNotice(MainActivity.this, time[0], time[1]);
+                                NoticeManager.enableNotice(MainActivity.this, time[0], time[1], sTbeforeADay.isChecked());
                                 Toast.makeText(MainActivity.this, String.format(Locale.KOREA, "매일 %s %d시 %d분 알림이 뜹니다.", time[0] < 12 ? "오전" : "오후", (time[0] + 11) % 12 + 1, time[1]), Toast.LENGTH_LONG).show();
                             } else if(enable) {
                                 Toast.makeText(MainActivity.this, "알림이 뜨지 않습니다.", Toast.LENGTH_SHORT).show();
