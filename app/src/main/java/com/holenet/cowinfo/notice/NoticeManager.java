@@ -55,6 +55,8 @@ public class NoticeManager {
 
     public static void disableNotice(Context context) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_NO_CREATE);
+        if (pendingIntent == null)
+            return;
         getAlarmManager(context).cancel(pendingIntent);
         setPreference(context, false, 0, 0, false);
     }
