@@ -69,7 +69,13 @@ public class NoticeService extends IntentService {
                 return;
             }
 
-            List<Record> records = result.getResult();
+            List<Record> records = new ArrayList<>();
+            for (Record record : result.getResult()) {
+                if ("재발".equals(record.content) || "분만".equals(record.content)) {
+                    records.add(record);
+                }
+            }
+
             if (records.size() == 0)
                 return;
 
@@ -113,7 +119,11 @@ public class NoticeService extends IntentService {
     }
 
     private void notifyWithContent(ArrayList<Record> records, CalendarDay date) {
-        String content = String.format(Locale.KOREA, "%d월 %d일 이력: %d개", date.getMonth() + 1, date.getDay(), records.size());
+        String content;
+        if (records.size() > 1)
+            content = String.format(Locale.KOREA, "%d월 %d일 재발/분만 알림: %d건", date.getMonth() + 1, date.getDay(), records.size());
+        else
+            content = String.format(Locale.KOREA, "%d월 %d일 재발/분만 알림: [%s]", date.getMonth() + 1, date.getDay(), records.get(0).cow_summary);
         NotificationCompat.Builder builder = getBasicNotificationBuilder(content);
 
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
