@@ -10,6 +10,7 @@
     <string name="pref_key_notice_enable">notice_enable</string>
     <string name="pref_key_notice_hour_of_day">notice_hour_of_day</string>
     <string name="pref_key_notice_minute">notice_minute</string>
+    <string name="pref_key_notice_before_a_day">notice_before_a_day</string>
 
     <string-array name="week_day_labels">
         <item>일</item>

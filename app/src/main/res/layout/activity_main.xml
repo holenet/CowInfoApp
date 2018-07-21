@@ -34,7 +34,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorAccent"
-                android:padding="5dp"/>
+                android:padding="5dp"
+                style="@style/PagerTitleStripLarge"/>
 
         </android.support.v4.view.ViewPager>
     </android.support.constraint.ConstraintLayout>

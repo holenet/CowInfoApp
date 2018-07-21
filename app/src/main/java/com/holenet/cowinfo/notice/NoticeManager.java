@@ -21,7 +21,7 @@ public class NoticeManager {
         return new Intent(ACTION_CHECK);
     }
 
-    private static void setPreference(Context context, boolean enable, int hourOfDay, int minute) {
+    private static void setPreference(Context context, boolean enable, int hourOfDay, int minute, boolean beforeADay) {
         SharedPreferences pref = context.getSharedPreferences("notice", 0);
         SharedPreferences.Editor editor = pref.edit();
 
@@ -29,11 +29,12 @@ public class NoticeManager {
         if (enable) {
             editor.putInt(context.getString(R.string.pref_key_notice_hour_of_day), hourOfDay);
             editor.putInt(context.getString(R.string.pref_key_notice_minute), minute);
+            editor.putBoolean(context.getString(R.string.pref_key_notice_before_a_day), beforeADay);
         }
         editor.apply();
     }
 
-    public static void enableNotice(Context context, int hourOfDay, int minute) {
+    public static void enableNotice(Context context, int hourOfDay, int minute, boolean beforeADay) {
         Calendar calendar = Calendar.getInstance();
         long current = System.currentTimeMillis();
         calendar.setTimeInMillis(current);
@@ -47,12 +48,12 @@ public class NoticeManager {
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
         getAlarmManager(context).setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        setPreference(context, true, hourOfDay, minute);
+        setPreference(context, true, hourOfDay, minute, beforeADay);
     }
 
     public static void disableNotice(Context context) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_NO_CREATE);
         getAlarmManager(context).cancel(pendingIntent);
-        setPreference(context, false, 0, 0);
+        setPreference(context, false, 0, 0, false);
     }
 }
