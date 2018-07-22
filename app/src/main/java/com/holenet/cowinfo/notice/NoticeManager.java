@@ -11,14 +11,12 @@ import com.holenet.cowinfo.R;
 import java.util.Calendar;
 
 public class NoticeManager {
-    public static final String ACTION_CHECK = "com.holenet.cowinfo.notice.action.CHECK";
-
     private static AlarmManager getAlarmManager(Context context) {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    private static Intent getIntent() {
-        return new Intent(ACTION_CHECK);
+    private static PendingIntent getPendingIntent(Context context, int flag) {
+        return PendingIntent.getBroadcast(context, 1, new Intent(context, AlarmReceiver.class), flag);
     }
 
     private static void setPreference(Context context, boolean enable, int hourOfDay, int minute, boolean beforeADay) {
@@ -46,7 +44,7 @@ public class NoticeManager {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = getPendingIntent(context, PendingIntent.FLAG_UPDATE_CURRENT);
 //        For debug
         getAlarmManager(context).setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES/15, pendingIntent);
 //        getAlarmManager(context).setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -54,7 +52,7 @@ public class NoticeManager {
     }
 
     public static void disableNotice(Context context) {
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, getIntent(), PendingIntent.FLAG_NO_CREATE);
+        PendingIntent pendingIntent = getPendingIntent(context, PendingIntent.FLAG_NO_CREATE);
         if (pendingIntent == null)
             return;
         getAlarmManager(context).cancel(pendingIntent);

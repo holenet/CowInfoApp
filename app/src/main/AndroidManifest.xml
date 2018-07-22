@@ -42,7 +42,6 @@
             android:name=".notice.AlarmReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="com.holenet.cowinfo.notice.action.CHECK" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>

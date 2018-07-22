@@ -1,11 +1,13 @@
 package com.holenet.cowinfo.notice;
 
 import android.app.IntentService;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -26,6 +28,7 @@ import static com.holenet.cowinfo.NetworkService.destructDate;
 public class NoticeService extends IntentService {
     private static final String ACTION_NOTIFY = "com.holenet.cowinfo.notice.action.NOTIFY";
     private static final String PARAM_DATE = "com.holenet.cowinfo.notice.param.DATE";
+    private static final String CHANNEL_ID = "notice_channel";
 
     public NoticeService() {
         super("NoticeService");
@@ -35,11 +38,20 @@ public class NoticeService extends IntentService {
         Intent intent = new Intent(context, NoticeService.class);
         intent.setAction(ACTION_NOTIFY);
         intent.putExtra(PARAM_DATE, date);
-        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            context.startForegroundService(intent);
+        else
+            context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        createChannel();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationCompat.Builder builder = getBasicNotificationBuilder("작업 중...");
+            startForeground(1, builder.build());
+        }
+
         if (intent == null)
             return;
 
@@ -58,7 +70,12 @@ public class NoticeService extends IntentService {
             String password = pref.getString(context.getString(R.string.pref_key_password), "");
 
             User user = new User(username, password);
-            if (!NetworkService.signIn(user).isSuccessful()) {
+            NetworkService.Result<User> userResult = NetworkService.signIn(user);
+            if (userResult == null) {
+                notifyWithContent("서버 통신에 실패하였습니다.");
+                return;
+            }
+            if (!userResult.isSuccessful()) {
                 notifyWithContent("로그인에 실패하였습니다.");
                 return;
             }
@@ -85,11 +102,10 @@ public class NoticeService extends IntentService {
     }
 
     private NotificationCompat.Builder getBasicNotificationBuilder(String content) {
-        return new NotificationCompat.Builder(getApplicationContext(), "notice")
+        return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .setContentTitle(getApplicationContext().getString(R.string.app_name))
+                .setContentTitle(getApplicationContext().getString(R.string.app_name)+" 재발/분만 알림")
                 .setContentText(content)
-//                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setAutoCancel(true);
     }
 
@@ -103,9 +119,17 @@ public class NoticeService extends IntentService {
         return stackBuilder;
     }
 
+    private void createChannel() {
+        NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "한우이력정보 재발/분만 알림", NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(channel);
+        }
+    }
+
     private void notifyNotification(NotificationCompat.Builder builder) {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, builder.build());
+        manager.notify(2, builder.build());
     }
 
     private void notifyWithContent(String content) {
@@ -121,9 +145,9 @@ public class NoticeService extends IntentService {
     private void notifyWithContent(ArrayList<Record> records, CalendarDay date) {
         String content;
         if (records.size() > 1)
-            content = String.format(Locale.KOREA, "%d월 %d일 재발/분만 알림: %d건", date.getMonth() + 1, date.getDay(), records.size());
+            content = String.format(Locale.KOREA, "%d월 %d일 재발/분만 %d건", date.getMonth() + 1, date.getDay(), records.size());
         else
-            content = String.format(Locale.KOREA, "%d월 %d일 재발/분만 알림: [%s]", date.getMonth() + 1, date.getDay(), records.get(0).cow_summary);
+            content = String.format(Locale.KOREA, "%d월 %d일 %s %s", date.getMonth() + 1, date.getDay(), records.get(0).cow_summary, records.get(0).content);
         NotificationCompat.Builder builder = getBasicNotificationBuilder(content);
 
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
