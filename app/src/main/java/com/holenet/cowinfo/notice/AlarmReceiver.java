@@ -19,7 +19,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         final SharedPreferences pref = context.getSharedPreferences("notice", 0);
         final boolean beforeADay = pref.getBoolean(context.getString(R.string.pref_key_notice_before_a_day), false);
 
-        if (NoticeManager.ACTION_CHECK.equals(intent.getAction())) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+            final boolean enable = pref.getBoolean(context.getString(R.string.pref_key_notice_enable), false);
+            if (!enable)
+                return;
+            final int[] time = {pref.getInt(context.getString(R.string.pref_key_notice_hour_of_day), 9), pref.getInt(context.getString(R.string.pref_key_notice_minute), 0)};
+
+            NoticeManager.enableNotice(context, time[0], time[1], beforeADay);
+        } else {
             Calendar calendar = Calendar.getInstance();
             if (beforeADay) {
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -29,13 +36,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             NoticeService.startService(context, NetworkService.constructDate(year, month, day));
-        } else if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            final boolean enable = pref.getBoolean(context.getString(R.string.pref_key_notice_enable), false);
-            if (!enable)
-                return;
-            final int[] time = {pref.getInt(context.getString(R.string.pref_key_notice_hour_of_day), 9), pref.getInt(context.getString(R.string.pref_key_notice_minute), 0)};
-
-            NoticeManager.enableNotice(context, time[0], time[1], beforeADay);
         }
     }
 }
