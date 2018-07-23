@@ -5,4 +5,16 @@
     <color name="colorAccent">#ffae00</color>
 
     <color name="textColor">#000000</color>
+
+    <color name="recordSJ">#ff5151</color>
+    <color name="recordJB">#5bcf44</color>
+    <color name="recordBM">#6d60ff</color>
+    <color name="recordGT">#bababa</color>
+
+    <array name="recordColors">
+        <item>@color/recordSJ</item>
+        <item>@color/recordJB</item>
+        <item>@color/recordBM</item>
+        <item>@color/recordGT</item>
+    </array>
 </resources>
