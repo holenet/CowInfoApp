@@ -4,6 +4,6 @@
     <solid
         android:color="@color/recordSJ"/>
     <size
-        android:width="30px"
-        android:height="30px"/>
+        android:width="12sp"
+        android:height="12sp"/>
 </shape>
