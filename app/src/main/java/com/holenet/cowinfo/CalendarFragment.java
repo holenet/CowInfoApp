@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LineBackgroundSpan;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,8 +112,9 @@ public class CalendarFragment extends Fragment {
 
         mCVrecords = view.findViewById(R.id.mCVrecords);
         mCVrecords.addDecorators(sunDecorator, satDecorator, todayDecorator);
+        int radius =  (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 6, getResources().getDisplayMetrics());
         for (int i = 1; i < 16; ++i) {
-            mCVrecords.addDecorator(new RecordDecorator(i));
+            mCVrecords.addDecorator(new RecordDecorator(radius, i));
         }
         mCVrecords.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -279,7 +281,7 @@ public class CalendarFragment extends Fragment {
         private final int index;
         private final ColorfulCakeSpan span;
 
-        public RecordDecorator(int index) {
+        public RecordDecorator(int radius, int index) {
             this.index = index;
             List<Integer> colorList = new ArrayList<>();
             int cnt = 0;
@@ -294,7 +296,7 @@ public class CalendarFragment extends Fragment {
             for (int i = 0; i < colors.length; ++i) {
                 colors[i] = colorList.get(i);
             }
-            this.span = new ColorfulCakeSpan(15, colors);
+            this.span = new ColorfulCakeSpan(radius, colors);
         }
 
         @Override

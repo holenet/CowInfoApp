@@ -43,7 +43,6 @@
                 android:layout_weight="1"
                 android:drawablePadding="15px"
                 android:drawableStart="@drawable/shape_record_sj"
-                android:drawableTint="@color/recordSJ"
                 android:gravity="center_vertical"
                 android:text="수정"
                 android:textSize="@dimen/text_size_large" />
@@ -60,8 +59,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:drawablePadding="15px"
-                android:drawableStart="@drawable/shape_record_sj"
-                android:drawableTint="@color/recordJB"
+                android:drawableStart="@drawable/shape_record_jb"
                 android:gravity="center_vertical"
                 android:text="재발"
                 android:textSize="@dimen/text_size_large" />
@@ -78,8 +76,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:drawablePadding="15px"
-                android:drawableStart="@drawable/shape_record_sj"
-                android:drawableTint="@color/recordBM"
+                android:drawableStart="@drawable/shape_record_bm"
                 android:gravity="center_vertical"
                 android:text="분만"
                 android:textSize="@dimen/text_size_large" />
@@ -96,8 +93,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:drawablePadding="15px"
-                android:drawableStart="@drawable/shape_record_sj"
-                android:drawableTint="@color/recordGT"
+                android:drawableStart="@drawable/shape_record_gt"
                 android:gravity="center_vertical"
                 android:text="기타"
                 android:textSize="@dimen/text_size_large" />
